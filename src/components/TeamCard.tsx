@@ -1,5 +1,5 @@
 import type { TeamMember } from "../data/team";
-import { ArrowUpRightIcon, GitHubIcon, LinkedInIcon } from "../lib/icons";
+import { ArrowUpRightIcon, GitHubIcon, LinkedInIcon, WhatsAppIcon } from "../lib/icons";
 import { cn, initialsOf } from "../lib/utils";
 
 type TeamCardProps = {
@@ -36,6 +36,17 @@ export function TeamCard({ member }: TeamCardProps) {
         <p className="mt-2.5 flex-1 text-sm leading-relaxed text-ink-500">{member.description}</p>
 
         <div className="mt-4 flex items-center gap-2 border-t border-ink-100 pt-4">
+          {member.whatsapp && (
+            <a
+              href={`https://wa.me/${member.whatsapp}`}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`WhatsApp de ${member.name}`}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-ink-100 text-ink-500 transition-colors hover:border-brand-500 hover:text-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+            >
+              <WhatsAppIcon className="h-4 w-4" />
+            </a>
+          )}
           {member.github && (
             <a
               href={member.github}

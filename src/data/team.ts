@@ -7,6 +7,7 @@ export type TeamMember = {
   github?: string;
   linkedin?: string;
   portfolio?: string;
+  whatsapp?: string;
 };
 
 export const team: TeamMember[] = [
@@ -19,4 +20,12 @@ export const team: TeamMember[] = [
     linkedin: "https://www.linkedin.com/in/endrick-brito-32a299426/?enhance=null",
     portfolio: "https://endrick-brito.vercel.app/",
   },
+  {
+    id: "membro-2",
+    photo: "public/team/Henrique.jpg",  
+    name: "Henrique Carvalho",
+    role: "Business Developer",
+    description: "Prospecção de clientes, desenvolvimento de oportunidades, reuniões comerciais e negociação de projetos digitais.",
+    whatsapp: "https://wa.me/5511973390373",
+  }
 ];
