@@ -41,7 +41,7 @@ export function Projects() {
                 onClick={() => setFilter(item.id)}
                 aria-pressed={active}
                 className={cn(
-                  "rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600",
+                  "rounded-full border px-4 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600",
                   active
                     ? "border-ink-950 bg-ink-950 text-white shadow-sm"
                     : "border-ink-200 bg-white text-ink-600 hover:border-ink-400 hover:text-ink-950",

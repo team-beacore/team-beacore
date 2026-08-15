@@ -42,7 +42,7 @@ export function TeamCard({ member }: TeamCardProps) {
               target="_blank"
               rel="noreferrer"
               aria-label={`WhatsApp de ${member.name}`}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-ink-100 text-ink-500 transition-colors hover:border-brand-500 hover:text-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-ink-100 text-ink-500 transition-colors hover:border-brand-500 hover:text-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
             >
               <WhatsAppIcon className="h-4 w-4" />
             </a>
@@ -53,7 +53,7 @@ export function TeamCard({ member }: TeamCardProps) {
               target="_blank"
               rel="noreferrer"
               aria-label={`GitHub de ${member.name}`}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-ink-100 text-ink-500 transition-colors hover:border-brand-500 hover:text-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-ink-100 text-ink-500 transition-colors hover:border-brand-500 hover:text-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
             >
               <GitHubIcon className="h-4 w-4" />
             </a>
@@ -64,7 +64,7 @@ export function TeamCard({ member }: TeamCardProps) {
               target="_blank"
               rel="noreferrer"
               aria-label={`LinkedIn de ${member.name}`}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-ink-100 text-ink-500 transition-colors hover:border-brand-500 hover:text-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-ink-100 text-ink-500 transition-colors hover:border-brand-500 hover:text-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
             >
               <LinkedInIcon className="h-4 w-4" />
             </a>

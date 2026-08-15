@@ -22,10 +22,10 @@ export const team: TeamMember[] = [
   },
   {
     id: "membro-2",
-    photo: "public/team/Henrique.jpg",  
+    photo: "/team/Henrique.jpg",  
     name: "Henrique Carvalho",
     role: "Business Developer",
     description: "Prospecção de clientes, desenvolvimento de oportunidades, reuniões comerciais e negociação de projetos digitais.",
-    whatsapp: "https://wa.me/5511973390373",
+    whatsapp: "5511973390373",
   }
 ];

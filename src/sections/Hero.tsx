@@ -74,25 +74,25 @@ export function Hero() {
       <div className="mx-auto w-full max-w-6xl px-5 pb-16 pt-28 sm:px-6 sm:pt-32 lg:px-8 lg:pb-24 lg:pt-40">
         <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
           <Reveal>
-            <div className="max-w-xl lg:max-w-none">
+            <div className="max-w-xl max-md:mx-auto max-md:text-center lg:max-w-none">
               <span className="inline-flex items-center gap-2.5 rounded-full border border-brand-500/20 bg-brand-50 px-4 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-brand-700 sm:text-[11px] sm:tracking-[0.2em]">
                 <span className="h-1.5 w-1.5 animate-pulse-dot rounded-full bg-brand-500" />
                 Beacore — Digital Engineering
               </span>
 
-              <h1 className="mt-6 font-display text-[2.6rem] font-bold leading-[1.05] tracking-tight text-ink-950 text-balance sm:text-5xl lg:text-[3.75rem] xl:text-[4.25rem]">
+              <h1 className="mt-6 font-display text-[2.2rem] font-bold leading-[1.08] tracking-tight text-ink-950 text-balance sm:text-5xl sm:leading-[1.05] lg:text-[3.75rem] xl:text-[4.25rem]">
                 Construímos experiências digitais que{" "}
                 <span className="bg-gradient-to-r from-brand-700 to-brand-400 bg-clip-text text-transparent">
                   funcionam.
                 </span>
               </h1>
 
-              <p className="mt-6 max-w-xl text-base leading-relaxed text-ink-500 lg:text-lg">
+              <p className="mt-6 max-w-xl max-md:mx-auto text-base leading-relaxed text-ink-500 lg:text-lg">
                 Desenvolvimento web, produtos digitais e soluções sob medida para transformar
                 ideias em experiências reais.
               </p>
 
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="mt-9 flex flex-col gap-3 max-md:items-center sm:flex-row sm:items-center">
                 <Button href="#projetos" size="lg">
                   Conheça nossos projetos
                 </Button>
@@ -107,7 +107,7 @@ export function Hero() {
             </div>
           </Reveal>
 
-          <Reveal delay={150} className="mx-auto w-full max-w-md lg:max-w-none">
+          <Reveal delay={150} className="mx-auto w-full max-w-md max-md:hidden lg:max-w-none">
             <CodeCard />
           </Reveal>
         </div>

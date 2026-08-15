@@ -9,7 +9,7 @@ export function Technologies() {
       <div className="py-16 lg:py-20">
         <Reveal>
           <div className="mx-auto max-w-3xl text-center">
-            <h2 className="font-display text-2xl font-bold tracking-tight text-ink-950 sm:text-3xl">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-ink-950 text-balance sm:text-3xl">
               Tecnologias que utilizamos.
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-ink-500">

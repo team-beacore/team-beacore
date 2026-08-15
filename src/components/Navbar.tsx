@@ -82,7 +82,7 @@ export function Navbar() {
         aria-label="Navegação principal"
         className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-6 lg:h-[72px] lg:px-8"
       >
-        <Logo href="#inicio" className="h-7 w-auto lg:h-8" />
+        <Logo href="#inicio" className="w-18 lg:w-20" />
 
         <ul className="hidden items-center gap-8 lg:flex">
           {siteConfig.nav.map((item) => (
@@ -127,7 +127,7 @@ export function Navbar() {
         className={cn(
           "border-ink-100 bg-white transition-all duration-300 ease-out lg:hidden",
           open
-            ? "max-h-[calc(100dvh-4rem)] overflow-y-auto border-t"
+            ? "max-h-[calc(100vh-4rem)] max-h-[calc(100dvh-4rem)] overflow-y-auto border-t"
             : "max-h-0 overflow-hidden",
         )}
       >

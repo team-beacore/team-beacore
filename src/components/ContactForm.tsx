@@ -5,7 +5,7 @@ import { CheckIcon, SendIcon, WhatsAppIcon } from "../lib/icons";
 import { Button } from "./Button";
 
 const inputClass =
-  "w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-sm text-ink-900 placeholder:text-ink-400 transition focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/10";
+  "w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-base text-ink-900 placeholder:text-ink-400 transition focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/10";
 
 type FieldProps = {
   id: string;

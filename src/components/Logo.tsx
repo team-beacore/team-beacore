@@ -15,7 +15,7 @@ export function Logo({ size, href, className }: LogoProps) {
       alt="Beacore — Digital Engineering"
       width={2172}
       height={724}
-      className={cn("h-auto w-auto select-none", className)}
+      className={cn("h-auto select-none", className)}
       style={size ? { height: size } : undefined}
     />
   );

@@ -54,11 +54,13 @@ export function About() {
         </div>
 
         <Reveal>
-          <dl className="mt-14 grid gap-8 border-t border-ink-100 pt-10 sm:grid-cols-3">
+          <dl className="mt-10 grid grid-cols-3 gap-4 border-t border-ink-100 pt-8 sm:mt-14 sm:gap-6 sm:pt-10 lg:gap-8">
             {stats.map((stat) => (
-              <div key={stat.label} className="flex flex-col">
-                <dt className="order-2 mt-1 text-sm text-ink-500">{stat.label}</dt>
-                <dd className="order-1 font-display text-4xl font-bold tracking-tight text-ink-950 sm:text-5xl">
+              <div key={stat.label} className="flex flex-col items-center text-center">
+                <dt className="order-2 mt-1 max-w-full text-xs leading-snug text-ink-500 sm:text-sm">
+                  {stat.label}
+                </dt>
+                <dd className="order-1 font-display text-3xl font-bold tracking-tight text-ink-950 sm:text-4xl lg:text-5xl">
                   {stat.value}
                   <span className="text-brand-600">+</span>
                 </dd>
