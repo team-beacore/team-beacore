@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0a0a0e"/>
+  <g stroke="#ffffff" stroke-opacity="0.05">
+    <line x1="0" y1="90" x2="1200" y2="90"/>
+    <line x1="0" y1="180" x2="1200" y2="180"/>
+    <line x1="0" y1="270" x2="1200" y2="270"/>
+    <line x1="0" y1="360" x2="1200" y2="360"/>
+    <line x1="0" y1="450" x2="1200" y2="450"/>
+    <line x1="0" y1="540" x2="1200" y2="540"/>
+    <line x1="150" y1="0" x2="150" y2="630"/>
+    <line x1="300" y1="0" x2="300" y2="630"/>
+    <line x1="450" y1="0" x2="450" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="750" y1="0" x2="750" y2="630"/>
+    <line x1="900" y1="0" x2="900" y2="630"/>
+    <line x1="1050" y1="0" x2="1050" y2="630"/>
+  </g>
+  <circle cx="90" cy="90" r="180" fill="#0a5cff" opacity="0.22"/>
+  <circle cx="1100" cy="540" r="220" fill="#0a5cff" opacity="0.14"/>
+  <rect x="62" y="62" width="118" height="118" rx="26" fill="none" stroke="#0a5cff" stroke-width="5"/>
+  <circle cx="121" cy="121" r="13" fill="#0a5cff"/>
+  <path d="M96.5 148a23 23 0 0 1 49 0" fill="none" stroke="#0a5cff" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
+  <path d="M86.5 168a36 36 0 0 1 69 0" fill="none" stroke="#0a5cff" stroke-width="5" stroke-linecap="round" opacity="0.45"/>
+  <text x="240" y="150" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="700" letter-spacing="14" fill="#ffffff">BEACORE</text>
+  <text x="240" y="200" font-family="Arial, Helvetica, sans-serif" font-size="28" letter-spacing="10" fill="#8a8a9a">DIGITAL ENGINEERING</text>
+  <text x="240" y="330" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="600" fill="#ffffff">Construímos experiências digitais</text>
+  <text x="240" y="390" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="600" fill="#0a5cff">que funcionam.</text>
+</svg>
