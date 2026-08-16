@@ -23,12 +23,12 @@ export type Project = {
 export const projects: Project[] = [
   {
     id: "microfix",
-    name: "MicroFix",
+    name: "MicroFix Informática",
     category: "site",
     description:
       "Site institucional desenvolvido para fortalecer presença digital e geração de contatos.",
     technologies: ["WordPress", "HTML", "CSS", "JavaScript"],
-    demoUrl: "#projetos",
+    demoUrl: "https://microfixinformatica.com.br",
     image: "",
     accent: "#0a5cff",
     featured: true,
