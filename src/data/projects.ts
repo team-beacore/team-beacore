@@ -23,7 +23,7 @@ export type Project = {
 export const projects: Project[] = [
   {
     id: "microfix",
-    name: "MicroFix Informática",
+    name: "MicroFix Informática (EM CONTRUÇÃO)",
     category: "site",
     description:
       "Site institucional desenvolvido para fortalecer presença digital e geração de contatos.",
