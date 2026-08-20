@@ -1,6 +1,8 @@
 import type { Project, ProjectCategory } from "../data/projects";
+import type { ApprovedFeedback } from "../lib/feedbacks";
 import { ArrowUpRightIcon, GitHubIcon } from "../lib/icons";
 import { cn, initialsOf } from "../lib/utils";
+import { FeedbackQuote } from "./FeedbackQuote";
 import { TechnologyBadge } from "./TechnologyBadge";
 
 const categoryLabels: Record<ProjectCategory, string> = {
@@ -53,9 +55,10 @@ function ProjectVisual({ project, large }: { project: Project; large: boolean })
 type ProjectCardProps = {
   project: Project;
   large?: boolean;
+  feedbacks?: ApprovedFeedback[];
 };
 
-export function ProjectCard({ project, large = false }: ProjectCardProps) {
+export function ProjectCard({ project, large = false, feedbacks }: ProjectCardProps) {
   return (
     <article
       className={cn(
@@ -77,6 +80,24 @@ export function ProjectCard({ project, large = false }: ProjectCardProps) {
             <TechnologyBadge key={tech} name={tech} />
           ))}
         </div>
+
+        {feedbacks && feedbacks.length > 0 && (
+          <div className="mt-6 border-t border-ink-100 pt-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-400">
+              Depoimentos
+            </p>
+            <div className="mt-3 space-y-3">
+              {feedbacks.map((feedback) => (
+                <FeedbackQuote
+                  key={feedback.id}
+                  content={feedback.content}
+                  authorName={feedback.authorName}
+                  company={feedback.company}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mt-6 flex items-center gap-5 border-t border-ink-100 pt-5">
           <a

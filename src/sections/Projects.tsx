@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Section } from "../components/Section";
 import { SectionHeading } from "../components/SectionHeading";
 import { ProjectCard } from "../components/ProjectCard";
-import { projects, projectCategories, type ProjectCategory } from "../data/projects";
+import { projectCategories, type ProjectCategory } from "../data/projects";
+import { useProjects } from "../hooks/useProjects";
+import { getApprovedProjectFeedbacks, type ApprovedFeedback } from "../lib/feedbacks";
 import { cn } from "../lib/utils";
 
 type FilterId = "todos" | ProjectCategory;
@@ -13,7 +15,31 @@ const filters: { id: FilterId; label: string }[] = [
 ];
 
 export function Projects() {
+  const { projects, loading, error } = useProjects();
   const [filter, setFilter] = useState<FilterId>("todos");
+  const [feedbacksByProject, setFeedbacksByProject] = useState<
+    Record<string, ApprovedFeedback[] | null>
+  >({});
+
+  useEffect(() => {
+    if (loading) return;
+
+    let active = true;
+
+    Promise.all(
+      projects.map(async (project) => {
+        const feedbacks = await getApprovedProjectFeedbacks(project.id);
+        return [project.id, feedbacks] as const;
+      }),
+    ).then((entries) => {
+      if (!active) return;
+      setFeedbacksByProject(Object.fromEntries(entries));
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [projects, loading]);
 
   const visibleProjects =
     filter === "todos" ? projects : projects.filter((project) => project.category === filter);
@@ -53,13 +79,26 @@ export function Projects() {
           })}
         </div>
 
-        <div className="mt-10 grid gap-5 sm:gap-6 lg:mt-14 lg:grid-cols-2">
+        <div
+          aria-busy={loading}
+          className="mt-10 grid gap-5 sm:gap-6 lg:mt-14 lg:grid-cols-2"
+        >
           {visibleProjects.map((project) => (
             <div key={project.id} className={cn(project.featured && "lg:col-span-2")}>
-              <ProjectCard project={project} large={project.featured} />
+              <ProjectCard
+                project={project}
+                large={project.featured}
+                feedbacks={feedbacksByProject[project.id] ?? undefined}
+              />
             </div>
           ))}
         </div>
+
+        {error && (
+          <p role="status" className="sr-only">
+            {error}
+          </p>
+        )}
       </div>
     </Section>
   );
