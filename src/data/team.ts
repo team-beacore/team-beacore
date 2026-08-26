@@ -14,6 +14,7 @@ export const team: TeamMember[] = [
   {
     id: "membro-1",
     name: "Endrick Brito",
+    photo: "/team/Endrick.jpg",
     role: "Full Stack Developer",
     description: "Desenvolvimento de aplicações web, arquitetura e integração de sistemas.",
     github: "https://github.com/endbit",
@@ -23,15 +24,15 @@ export const team: TeamMember[] = [
   },
   {
     id: "membro-2",
-    photo: "/team/Henrique.jpg",  
+    photo: "/team/Henrique.jpg",
     name: "Henrique Carvalho",
     role: "Business Developer",
     description: "Prospecção de clientes, desenvolvimento de oportunidades, reuniões comerciais e negociação de projetos digitais.",
     whatsapp: "5511973390373",
   },
-    {
+  {
     id: "membro-3",
-    photo: "/team/Andre.jpg",  
+    photo: "/team/Andre.jpg",
     name: "André Silva",
     role: "Full Stack Developer",
     description: "Desenvolvimento de aplicações web, arquitetura e integração de sistemas.",
