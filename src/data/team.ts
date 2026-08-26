@@ -18,6 +18,7 @@ export const team: TeamMember[] = [
     description: "Desenvolvimento de aplicações web, arquitetura e integração de sistemas.",
     github: "https://github.com/endbit",
     linkedin: "https://www.linkedin.com/in/endrick-brito-32a299426/?enhance=null",
+    whatsapp: "5524998546942",
     portfolio: "https://endrick-brito.vercel.app/",
   },
   {
@@ -34,8 +35,9 @@ export const team: TeamMember[] = [
     name: "André Silva",
     role: "Full Stack Developer",
     description: "Desenvolvimento de aplicações web, arquitetura e integração de sistemas.",
-    github: "https://github.com/endbit",
-    linkedin: "https://www.linkedin.com/in/endrick-brito-32a299426/?enhance=null",
-    portfolio: "https://endrick-brito.vercel.app/",
+    github: "https://github.com",
+    linkedin: "https://www.linkedin.com",
+    whatsapp: "558881623640",
+    portfolio: "https://google.com",
   }
 ];
