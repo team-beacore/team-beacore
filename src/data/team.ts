@@ -27,5 +27,15 @@ export const team: TeamMember[] = [
     role: "Business Developer",
     description: "Prospecção de clientes, desenvolvimento de oportunidades, reuniões comerciais e negociação de projetos digitais.",
     whatsapp: "5511973390373",
+  },
+    {
+    id: "membro-3",
+    photo: "/team/Andre.jpg",  
+    name: "André Silva",
+    role: "Full Stack Developer",
+    description: "Desenvolvimento de aplicações web, arquitetura e integração de sistemas.",
+    github: "https://github.com/endbit",
+    linkedin: "https://www.linkedin.com/in/endrick-brito-32a299426/?enhance=null",
+    portfolio: "https://endrick-brito.vercel.app/",
   }
 ];
