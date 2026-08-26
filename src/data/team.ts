@@ -14,7 +14,7 @@ export const team: TeamMember[] = [
   {
     id: "membro-1",
     name: "Endrick Brito",
-/*     photo: "/team/Endrick.jpg", */
+    photo: "/team/Endrick.jpg",
     role: "Full Stack Developer",
     description: "Desenvolvimento de aplicações web, arquitetura e integração de sistemas.",
     github: "https://github.com/endbit",
