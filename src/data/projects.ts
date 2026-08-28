@@ -32,5 +32,17 @@ export const projects: Project[] = [
     image: "https://microfixinformatica.com.br/wp-content/uploads/2026/08/Microfix-Informatica.png",
     accent: "#0a5cff",
     featured: true,
+  },
+  {
+    id: "agencia ",
+    name: "MicroFix Informática (EM CONSTRUÇÃO)",
+    category: "site",
+    description:
+      "Site institucional desenvolvido para fortalecer presença digital e geração de contatos.",
+    technologies: ["WordPress", "HTML", "CSS", "JavaScript"],
+    demoUrl: "https://microfixinformatica.com.br",
+    image: "https://microfixinformatica.com.br/wp-content/uploads/2026/08/Microfix-Informatica.png",
+    accent: "#0a5cff",
+    featured: true,
   }
 ];
