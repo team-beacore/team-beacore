@@ -2,7 +2,7 @@ export const siteConfig = {
   name: "BEACORE",
   slogan: "Construímos experiências digitais que funcionam.",
   description: "Desenvolvimento web, produtos digitais e soluções sob medida.",
-  brandUrl: "https://beacore.dev",
+  brandUrl: "https://beacore.vercel.app/",
   stats: {
     projects: 80,
     technologies: 20,
@@ -25,7 +25,7 @@ export const siteConfig = {
   social: {
     github: "https://github.com/team-beacore/",
     linkedin: "#",
-    instagram: "#",
+    instagram: "https://www.instagram.com/equipebeacore?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw%3D%3D",
   },
   cta: {
     label: "Vamos conversar",
@@ -34,7 +34,7 @@ export const siteConfig = {
   seo: {
     title: "Beacore | Digital Engineering",
     description: "Beacore — desenvolvimento web, produtos digitais e soluções sob medida.",
-    url: "https://beacore.dev",
+    url: "https://beacore.vercel.app/",
     ogImage: "/og-cover.svg",
   },
 } as const;
