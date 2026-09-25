@@ -7,6 +7,8 @@ type SectionHeadingProps = {
   align?: "left" | "center";
   tone?: "light" | "dark";
   className?: string;
+  /** Permite que a seção use aria-labelledby apontando para este h2. */
+  id?: string;
 };
 
 export function SectionHeading({
@@ -16,6 +18,7 @@ export function SectionHeading({
   align = "center",
   tone = "light",
   className,
+  id,
 }: SectionHeadingProps) {
   const isDark = tone === "dark";
   const isCentered = align === "center";
@@ -38,6 +41,7 @@ export function SectionHeading({
         </p>
       )}
       <h2
+        id={id}
         className={cn(
           "font-display text-3xl font-bold tracking-tight text-balance sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1]",
           isDark ? "text-white" : "text-ink-950",

@@ -116,7 +116,7 @@ export async function listAdminProjects(): Promise<AdminProject[]> {
   if (!isSupabaseConfigured) return [];
 
   try {
-    const { data, error } = await getSupabaseClient().rpc("admin_list_projects");
+    const { data, error } = await (await getSupabaseClient()).rpc("admin_list_projects");
 
     if (error) {
       console.error("[adminProjects] Falha ao listar projetos:", error.message);
@@ -136,7 +136,7 @@ export async function createAdminProject(
   if (!isSupabaseConfigured) return { ok: false, reason: "error" };
 
   try {
-    const { data, error } = await getSupabaseClient().rpc("admin_create_project", {
+    const { data, error } = await (await getSupabaseClient()).rpc("admin_create_project", {
       p_id: input.id,
       p_name: input.name,
       p_category: input.category,
@@ -170,7 +170,7 @@ export async function updateAdminProject(
   if (!isSupabaseConfigured) return { ok: false, reason: "error" };
 
   try {
-    const { data, error } = await getSupabaseClient().rpc("admin_update_project", {
+    const { data, error } = await (await getSupabaseClient()).rpc("admin_update_project", {
       p_id: id,
       p_name: input.name,
       p_category: input.category,

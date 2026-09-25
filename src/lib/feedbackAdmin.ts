@@ -56,7 +56,7 @@ export async function listFeedbacks(status?: FeedbackStatus): Promise<AdminFeedb
   if (!isSupabaseConfigured) return [];
 
   try {
-    const { data, error } = await getSupabaseClient().rpc("admin_list_feedbacks", {
+    const { data, error } = await (await getSupabaseClient()).rpc("admin_list_feedbacks", {
       p_status: status ?? null,
     });
 
@@ -89,7 +89,7 @@ async function runAdminAction(
   if (!isSupabaseConfigured) return { ok: false, reason: "error" };
 
   try {
-    const { data, error } = await getSupabaseClient().rpc(rpc, {
+    const { data, error } = await (await getSupabaseClient()).rpc(rpc, {
       p_feedback_id: feedbackId,
     });
 

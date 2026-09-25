@@ -40,8 +40,7 @@ export async function getProjects(): Promise<ProjectsResult> {
   }
 
   try {
-    const { data, error } = await getSupabaseClient()
-      .from("projects")
+    const { data, error } = await (await getSupabaseClient()).from("projects")
       .select("*")
       .eq("published", true)
       .order("sort_order", { ascending: true })

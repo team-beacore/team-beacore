@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "../components/Button";
+import { useSeo } from "../components/seo/Seo";
 import { TechnologyBadge } from "../components/TechnologyBadge";
 import {
   submitFeedback,
@@ -58,6 +59,14 @@ export function FeedbackPage() {
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<SubmitFeedbackErrorReason | null>(null);
+
+  // Link pessoal e de uso único: nunca indexado. Também bloqueado no robots.txt.
+  useSeo({
+    path: "/feedback",
+    title: "Enviar feedback | Beacore",
+    description: "Formulário de feedback da Beacore.",
+    robots: "noindex, nofollow",
+  });
 
   useEffect(() => {
     let active = true;
@@ -131,7 +140,7 @@ export function FeedbackPage() {
   if (state.phase === "validating") {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-white px-5">
-        <p className="font-mono text-xs uppercase tracking-[0.22em] text-ink-400">Carregando...</p>
+        <p className="font-mono text-xs uppercase tracking-[0.22em] text-ink-500">Carregando...</p>
       </div>
     );
   }
@@ -244,7 +253,7 @@ export function FeedbackPage() {
                   className={inputClass}
                   placeholder="voce@email.com"
                 />
-                <p className="mt-1.5 text-xs text-ink-400">
+                <p className="mt-1.5 text-xs text-ink-500">
                   Seu e-mail não será exibido publicamente. Usamos apenas para identificação.
                 </p>
               </div>
@@ -274,7 +283,7 @@ export function FeedbackPage() {
                   <span role="status" className="sr-only">
                     {fieldError}
                   </span>
-                  <p className="text-xs text-ink-400">
+                  <p className="text-xs text-ink-500">
                     {content.length} / {MAX_CONTENT_LENGTH}
                   </p>
                 </div>

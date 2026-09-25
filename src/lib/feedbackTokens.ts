@@ -58,7 +58,7 @@ export async function validateFeedbackToken(token: string): Promise<FeedbackToke
   }
 
   try {
-    const { data, error } = await getSupabaseClient().rpc("validate_feedback_token", {
+    const { data, error } = await (await getSupabaseClient()).rpc("validate_feedback_token", {
       p_token: token,
     });
 
@@ -103,7 +103,7 @@ export async function submitFeedback(
   }
 
   try {
-    const { data, error } = await getSupabaseClient().rpc("submit_feedback", {
+    const { data, error } = await (await getSupabaseClient()).rpc("submit_feedback", {
       p_token: token,
       p_author_name: authorName,
       p_author_email: authorEmail,

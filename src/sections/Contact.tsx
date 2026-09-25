@@ -1,8 +1,8 @@
 import { siteConfig } from "../config/site";
-import { Reveal } from "../components/Reveal";
+import { Reveal } from "../components/motion/Reveal";
 import { Section } from "../components/Section";
 import { SectionHeading } from "../components/SectionHeading";
-import { ContactForm } from "../components/ContactForm";
+import { LeadForm } from "../components/LeadForm";
 import { whatsappUrl } from "../lib/utils";
 import {
   ArrowUpRightIcon,
@@ -12,7 +12,18 @@ import {
   WhatsAppIcon,
 } from "../lib/icons";
 
-const channels = [
+type Channel = {
+  label: string;
+  value: string;
+  href: string;
+  Icon: typeof MailIcon;
+};
+
+/**
+ * Só são renderizados canais com destino real.
+ * Redes sem URL em `siteConfig.social` simplesmente não aparecem.
+ */
+const channels: Channel[] = [
   {
     label: "WhatsApp",
     value: siteConfig.contact.whatsapp,
@@ -25,19 +36,27 @@ const channels = [
     href: `mailto:${siteConfig.contact.email}`,
     Icon: MailIcon,
   },
-  {
-    label: "Instagram",
-    value: "@beacore",
-    href: siteConfig.social.instagram,
-    Icon: InstagramIcon,
-  },
-  {
-    label: "LinkedIn",
-    value: "Beacore",
-    href: siteConfig.social.linkedin,
-    Icon: LinkedInIcon,
-  },
-] as const;
+  ...(siteConfig.social.instagram
+    ? [
+        {
+          label: "Instagram",
+          value: "@equipebeacore",
+          href: siteConfig.social.instagram,
+          Icon: InstagramIcon,
+        },
+      ]
+    : []),
+  ...(siteConfig.social.linkedin
+    ? [
+        {
+          label: "LinkedIn",
+          value: "Beacore",
+          href: siteConfig.social.linkedin,
+          Icon: LinkedInIcon,
+        },
+      ]
+    : []),
+];
 
 export function Contact() {
   return (
@@ -48,8 +67,7 @@ export function Contact() {
             <div>
               <SectionHeading eyebrow="Contato" title="Vamos conversar." align="left" />
               <p className="mt-5 max-w-md text-base leading-relaxed text-ink-500">
-                Conte sobre o seu projeto ou ideia. Respondemos rapidamente pelos canais que
-                preferir.
+                Conte sobre o seu projeto ou ideia. Respondemos pelos canais que preferir.
               </p>
 
               <ul className="mt-10 space-y-3">
@@ -65,14 +83,14 @@ export function Contact() {
                         <Icon className="h-5 w-5" />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-ink-400">
+                        <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-ink-500">
                           {label}
                         </span>
                         <span className="block truncate text-sm font-medium text-ink-900">
                           {value}
                         </span>
                       </span>
-                      <ArrowUpRightIcon className="h-4 w-4 shrink-0 text-ink-300 transition-colors group-hover:text-brand-600" />
+                      <ArrowUpRightIcon className="h-4 w-4 shrink-0 text-ink-400 transition-colors group-hover:text-brand-600" />
                     </a>
                   </li>
                 ))}
@@ -81,7 +99,7 @@ export function Contact() {
           </Reveal>
 
           <Reveal delay={120}>
-            <ContactForm />
+            <LeadForm source="home" />
           </Reveal>
         </div>
       </div>

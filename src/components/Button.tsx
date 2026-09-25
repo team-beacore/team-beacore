@@ -23,41 +23,60 @@ const sizes = {
 export type ButtonVariant = keyof typeof variants;
 export type ButtonSize = keyof typeof sizes;
 
-type ButtonProps = {
+type CommonProps = {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  href?: string;
-  external?: boolean;
-  type?: "button" | "submit";
   disabled?: boolean;
   onClick?: () => void;
   ariaLabel?: string;
+  tabIndex?: number;
   className?: string;
   children: ReactNode;
 };
 
-export function Button({
-  variant = "primary",
-  size = "md",
-  href,
-  external,
-  type = "button",
-  disabled,
-  onClick,
-  ariaLabel,
-  className,
-  children,
-}: ButtonProps) {
+type LinkProps = CommonProps & {
+  /** Presente = navegação, renderiza <a>. Ausente = ação, renderiza <button>. */
+  href: string;
+  external?: boolean;
+  type?: never;
+};
+
+type ActionProps = CommonProps & {
+  href?: undefined;
+  external?: never;
+  type?: "button" | "submit";
+};
+
+type ButtonProps = LinkProps | ActionProps;
+
+export function Button(props: ButtonProps) {
+  const {
+    variant = "primary",
+    size = "md",
+    disabled = false,
+    onClick,
+    ariaLabel,
+    tabIndex,
+    className,
+    children,
+  } = props;
+
   const classes = cn(base, variants[variant], sizes[size], className);
 
-  if (href) {
+  if (props.href !== undefined) {
+    // Um <a> desabilitado não existe em HTML. Para manter a semântica correta e
+    // continuar impedindo a navegação, o link vira um link inerte, anunciado como
+    // desabilitado e removido da ordem de tabulação.
     return (
       <a
-        href={href}
-        className={classes}
-        onClick={onClick}
+        href={disabled ? undefined : props.href}
+        role={disabled ? "link" : undefined}
+        aria-disabled={disabled || undefined}
+        tabIndex={disabled ? -1 : tabIndex}
+        className={cn(classes, disabled && "pointer-events-none opacity-60")}
+        onClick={disabled ? undefined : onClick}
         aria-label={ariaLabel}
-        {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+        {...(props.external && !disabled ? { target: "_blank", rel: "noreferrer" } : {})}
       >
         {children}
       </a>
@@ -65,7 +84,14 @@ export function Button({
   }
 
   return (
-    <button type={type} className={classes} onClick={onClick} disabled={disabled} aria-label={ariaLabel}>
+    <button
+      type={props.type ?? "button"}
+      className={classes}
+      onClick={onClick}
+      disabled={disabled}
+      tabIndex={tabIndex}
+      aria-label={ariaLabel}
+    >
       {children}
     </button>
   );

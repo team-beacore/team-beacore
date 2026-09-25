@@ -1,47 +1,75 @@
+import { Link } from "react-router-dom";
 import { siteConfig } from "../config/site";
+import { services, servicePath } from "../content/services";
 import { whatsappUrl } from "../lib/utils";
 import { GitHubIcon, InstagramIcon, LinkedInIcon, MailIcon, WhatsAppIcon } from "../lib/icons";
+
+type SocialLink = {
+  label: string;
+  href: string;
+  Icon: typeof GitHubIcon;
+};
 
 export function Footer() {
   const { nav, contact, social, slogan } = siteConfig;
 
+  // Redes sem URL configurada não são renderizadas — nunca um link para "#".
+  const socialLinks: SocialLink[] = [
+    social.github ? { label: "GitHub", href: social.github, Icon: GitHubIcon } : null,
+    social.linkedin ? { label: "LinkedIn", href: social.linkedin, Icon: LinkedInIcon } : null,
+    social.instagram ? { label: "Instagram", href: social.instagram, Icon: InstagramIcon } : null,
+  ].filter((item): item is SocialLink => item !== null);
+
   return (
     <footer className="bg-ink-950 text-ink-300">
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-6 lg:px-8">
-        <div className="grid gap-12 py-16 md:grid-cols-3 md:gap-8 lg:py-20">
+        <div className="grid gap-12 py-16 md:grid-cols-4 md:gap-8 lg:py-20">
           <div>
             <p className="font-display text-xl font-bold tracking-[0.18em] text-white">BEACORE</p>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-ink-400">{slogan}</p>
-            <div className="mt-6 flex items-center gap-2.5">
-              <a
-                href={social.github}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="GitHub da Beacore"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-ink-400 transition-colors hover:border-brand-500 hover:text-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
-              >
-                <GitHubIcon className="h-4.5 w-4.5" />
-              </a>
-              <a
-                href={social.linkedin}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="LinkedIn da Beacore"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-ink-400 transition-colors hover:border-brand-500 hover:text-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
-              >
-                <LinkedInIcon className="h-4.5 w-4.5" />
-              </a>
-              <a
-                href={social.instagram}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Instagram da Beacore"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-ink-400 transition-colors hover:border-brand-500 hover:text-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
-              >
-                <InstagramIcon className="h-4.5 w-4.5" />
-              </a>
-            </div>
+            {socialLinks.length > 0 && (
+              <div className="mt-6 flex items-center gap-2.5">
+                {socialLinks.map(({ label, href, Icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`${label} da Beacore`}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-ink-400 transition-colors hover:border-brand-500 hover:text-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                  >
+                    <Icon className="h-4.5 w-4.5" />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
+
+          <nav aria-label="Serviços">
+            <h3 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
+              Serviços
+            </h3>
+            <ul className="mt-4 space-y-2.5">
+              {services.map((service) => {
+                const href = servicePath(service);
+                const cls =
+                  "text-sm text-ink-400 transition-colors hover:text-white";
+                return (
+                  <li key={service.id}>
+                    {href.startsWith("/servicos") ? (
+                      <Link to={href} className={cls}>
+                        {service.title}
+                      </Link>
+                    ) : (
+                      <a href={href} className={cls}>
+                        {service.title}
+                      </a>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
 
           <nav aria-label="Links do rodapé">
             <h3 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
@@ -102,7 +130,7 @@ export function Footer() {
           </p>
 
           <a
-            href={siteConfig.brandUrl}
+            href={siteConfig.siteUrl}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-1.5 text-xs text-ink-500 transition-colors hover:text-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"

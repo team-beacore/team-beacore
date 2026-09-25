@@ -48,7 +48,7 @@ export async function generateInvite(
   if (!isSupabaseConfigured) return { ok: false, reason: "error" };
 
   try {
-    const { data, error } = await getSupabaseClient().rpc("admin_generate_feedback_token", {
+    const { data, error } = await (await getSupabaseClient()).rpc("admin_generate_feedback_token", {
       p_client_id: clientId,
       p_project_id: projectId,
     });
@@ -76,7 +76,7 @@ export async function listFeedbackTokens(
   if (!isSupabaseConfigured) return [];
 
   try {
-    const { data, error } = await getSupabaseClient().rpc("admin_list_feedback_tokens", {
+    const { data, error } = await (await getSupabaseClient()).rpc("admin_list_feedback_tokens", {
       p_client_id: clientId,
       p_project_id: projectId,
     });

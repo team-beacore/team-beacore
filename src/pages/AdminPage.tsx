@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { Button } from "../components/Button";
+import { useSeo } from "../components/seo/Seo";
 import { AdminClients } from "../components/admin/AdminClients";
 import { AdminFeedbacks } from "../components/admin/AdminFeedbacks";
+import { AdminLeads } from "../components/admin/AdminLeads";
 import { AdminProjects } from "../components/admin/AdminProjects";
 import { getSupabaseClient, isSupabaseConfigured } from "../lib/supabase";
 import { cn } from "../lib/utils";
 
-type AdminTab = "feedbacks" | "projects" | "clients";
+type AdminTab = "leads" | "feedbacks" | "projects" | "clients";
 
 const tabs: { id: AdminTab; label: string }[] = [
+  { id: "leads", label: "Leads" },
   { id: "feedbacks", label: "Feedbacks" },
   { id: "projects", label: "Projetos" },
   { id: "clients", label: "Clientes" },
@@ -22,17 +25,15 @@ export function AdminPage() {
   const [password, setPassword] = useState("");
   const [signingIn, setSigningIn] = useState(false);
   const [signInError, setSignInError] = useState<string | null>(null);
-  const [tab, setTab] = useState<AdminTab>("feedbacks");
+  const [tab, setTab] = useState<AdminTab>("leads");
 
-  useEffect(() => {
-    const meta = document.createElement("meta");
-    meta.name = "robots";
-    meta.content = "noindex, nofollow";
-    document.head.appendChild(meta);
-    return () => {
-      meta.remove();
-    };
-  }, []);
+  // Rota privada: fora do índice e sem canonical (ver Seo). Também bloqueada no robots.txt.
+  useSeo({
+    path: "/admin",
+    title: "Painel administrativo | Beacore",
+    description: "Área restrita da Beacore.",
+    robots: "noindex, nofollow",
+  });
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -41,23 +42,35 @@ export function AdminPage() {
     }
 
     let active = true;
+    let unsubscribe: (() => void) | null = null;
 
+    // O cliente agora chega por import dinâmico (ver lib/supabase.ts), então a
+    // sessão e o listener são configurados depois que o chunk carrega.
     getSupabaseClient()
-      .auth.getSession()
-      .then(({ data }) => {
+      .then(async (client) => {
+        const { data } = await client.auth.getSession();
         if (!active) return;
+
         setSession(data.session);
         setAuthReady(true);
-      });
 
-    const { data: subscription } = getSupabaseClient().auth.onAuthStateChange((_event, nextSession) => {
-      if (!active) return;
-      setSession(nextSession);
-    });
+        const { data: subscription } = client.auth.onAuthStateChange((_event, nextSession) => {
+          if (!active) return;
+          setSession(nextSession);
+        });
+        unsubscribe = () => subscription.subscription.unsubscribe();
+
+        // Desmontou enquanto o chunk carregava: cancela imediatamente.
+        if (!active) unsubscribe();
+      })
+      .catch((err) => {
+        console.error("[admin] Falha ao carregar o Supabase:", err);
+        if (active) setAuthReady(true);
+      });
 
     return () => {
       active = false;
-      subscription.subscription.unsubscribe();
+      unsubscribe?.();
     };
   }, []);
 
@@ -68,7 +81,7 @@ export function AdminPage() {
     setSigningIn(true);
 
     getSupabaseClient()
-      .auth.signInWithPassword({ email: email.trim(), password })
+      .then((client) => client.auth.signInWithPassword({ email: email.trim(), password }))
       .then(({ error }) => {
         setSigningIn(false);
         if (!error) return;
@@ -88,7 +101,7 @@ export function AdminPage() {
 
   function handleSignOut() {
     getSupabaseClient()
-      .auth.signOut()
+      .then((client) => client.auth.signOut())
       .catch((err) => {
         console.error("[admin] Falha ao sair:", err);
       });
@@ -111,7 +124,7 @@ export function AdminPage() {
   if (!authReady) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-white px-5">
-        <p className="font-mono text-xs uppercase tracking-[0.22em] text-ink-400">Carregando...</p>
+        <p className="font-mono text-xs uppercase tracking-[0.22em] text-ink-500">Carregando...</p>
       </div>
     );
   }
@@ -127,7 +140,7 @@ export function AdminPage() {
             Painel administrativo
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-ink-500">
-            Entre com uma conta autorizada para gerenciar projetos, clientes e feedbacks.
+            Entre com uma conta autorizada para gerenciar leads, projetos, clientes e feedbacks.
           </p>
 
           <form
@@ -228,6 +241,7 @@ export function AdminPage() {
         </nav>
 
         <main className="mt-8">
+          {tab === "leads" && <AdminLeads />}
           {tab === "feedbacks" && <AdminFeedbacks />}
           {tab === "projects" && <AdminProjects />}
           {tab === "clients" && <AdminClients />}

@@ -31,6 +31,8 @@
   --color-ink-950: #0b0b10;
 
   --animate-blink: blink 1.2s step-end infinite;
+  --animate-drift: drift 18s ease-in-out infinite;
+  --animate-sheen: sheen 2.8s ease-in-out infinite;
   --animate-float: float 7s ease-in-out infinite;
   --animate-pulse-dot: pulse-dot 2.4s ease-in-out infinite;
 
@@ -51,6 +53,28 @@
     }
     50% {
       transform: translateY(-10px);
+    }
+  }
+
+  @keyframes drift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(0, -14px, 0);
+    }
+  }
+
+  @keyframes sheen {
+    0% {
+      opacity: 0.35;
+    }
+    50% {
+      opacity: 0.85;
+    }
+    100% {
+      opacity: 0.35;
     }
   }
 
@@ -109,6 +133,134 @@
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
+    }
+  }
+}
+/* ---------------------------------------------------------------------------
+   Camada de superfícies — evolução visual da Fase 3.
+   Mantém branco / preto / azul da identidade; acrescenta profundidade,
+   separação entre seções e hierarquia, sem introduzir novas cores de marca.
+--------------------------------------------------------------------------- */
+
+/* Fundo claro com leve tintura azul: separa seções sem recorrer a cinza chapado. */
+@utility bg-surface {
+  background-color: #fbfcfe;
+  background-image: radial-gradient(
+    ellipse 80% 50% at 50% 0%,
+    rgb(10 92 255 / 0.045),
+    transparent 70%
+  );
+}
+
+/* Superfície escura das seções de destaque. */
+@utility bg-surface-dark {
+  background-color: #08080d;
+  background-image: radial-gradient(
+    ellipse 70% 60% at 50% 0%,
+    rgb(10 92 255 / 0.14),
+    transparent 70%
+  );
+}
+
+/* Card padrão: borda dupla sutil + realce interno no topo. */
+@utility card-surface {
+  border: 1px solid rgb(11 11 16 / 0.07);
+  background: linear-gradient(180deg, #ffffff 0%, #fdfdff 100%);
+  box-shadow:
+    0 1px 0 0 rgb(255 255 255 / 0.9) inset,
+    0 1px 2px 0 rgb(11 11 16 / 0.04),
+    0 8px 24px -16px rgb(11 11 16 / 0.12);
+}
+
+@utility card-surface-dark {
+  border: 1px solid rgb(255 255 255 / 0.09);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0.02) 100%);
+  box-shadow: 0 1px 0 0 rgb(255 255 255 / 0.06) inset;
+}
+
+/* Realce de card em hover/foco, no azul da marca. */
+@utility card-accent {
+  border-color: rgb(10 92 255 / 0.28);
+  box-shadow:
+    0 1px 0 0 rgb(255 255 255 / 0.9) inset,
+    0 0 0 1px rgb(10 92 255 / 0.08),
+    0 18px 40px -20px rgb(10 92 255 / 0.3);
+}
+
+/* Filete de destaque no topo de cards em seções escuras. */
+@utility edge-top {
+  position: relative;
+}
+@utility edge-top-line {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(10 92 255 / 0.55) 30%,
+    rgb(10 92 255 / 0.55) 70%,
+    transparent
+  );
+}
+
+/* Texto com o degradê da marca — usado com parcimônia, só em headlines. */
+@utility text-brand-gradient {
+  background-image: linear-gradient(100deg, #0647d6 0%, #2f72ff 55%, #5997ff 100%);
+  background-clip: text;
+  color: transparent;
+}
+
+/* Grid mais fino, para composições do Hero. */
+@utility bg-grid-fine {
+  background-image:
+    linear-gradient(to right, rgb(11 11 16 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(11 11 16 / 0.045) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Divisor entre seções. */
+@utility rule-soft {
+  background: linear-gradient(90deg, transparent, rgb(11 11 16 / 0.1), transparent);
+}
+
+/*
+  Espaço reservado para o mascote (ver item 10 do briefing da Fase 3).
+  O personagem ainda não existe; estes utilitários definem onde e em que escala
+  ele entra — Hero, 404, formulário, loading e CTA — para que a inserção futura
+  não exija remexer no layout.
+*/
+@utility mascot-slot {
+  display: contents;
+}
+@utility mascot-slot-hero {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: clamp(92px, 12vw, 168px);
+  pointer-events: none;
+}
+@utility mascot-slot-inline {
+  width: clamp(64px, 8vw, 104px);
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+@layer base {
+  /* Nenhuma seção pode gerar rolagem horizontal. */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  /* Alvo de foco visível e consistente em toda a navegação por teclado. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* Garante que nada fique preso em estado inicial de animação. */
+    [data-gsap-hidden] {
+      opacity: 1 !important;
+      transform: none !important;
     }
   }
 }

@@ -10,11 +10,15 @@ export type TeamMember = {
   whatsapp?: string;
 };
 
+/**
+ * Preencha github/linkedin/portfolio SOMENTE com URLs reais.
+ * Campos ausentes fazem o botão correspondente não ser renderizado (ver TeamCard).
+ */
 export const team: TeamMember[] = [
   {
     id: "membro-1",
     name: "Endrick Brito",
-    photo: "/team/Endrick.jpg",
+    /* photo: "/team/Endrick.jpg", */
     role: "Full Stack Developer",
     description: "Desenvolvimento de aplicações web, arquitetura e integração de sistemas.",
     github: "https://github.com/endbit",
@@ -36,9 +40,6 @@ export const team: TeamMember[] = [
     name: "André Silva",
     role: "Full Stack Developer",
     description: "Desenvolvimento de aplicações web, arquitetura e integração de sistemas.",
-    github: "https://github.com",
-    linkedin: "https://www.linkedin.com",
     whatsapp: "558881623640",
-    portfolio: "https://google.com",
   }
 ];

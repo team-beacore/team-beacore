@@ -5,7 +5,9 @@ import { getProjects } from "../lib/projects";
 export function useProjects() {
   const [projects, setProjects] = useState<Project[]>(fallbackProjects);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Sinal técnico para diagnóstico. NUNCA renderizado para o visitante:
+  // detalhes de infraestrutura não devem ser anunciados (inclusive por leitores de tela).
+  const [usingFallback, setUsingFallback] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -13,11 +15,7 @@ export function useProjects() {
     getProjects().then((result) => {
       if (!active) return;
       setProjects(result.projects);
-      setError(
-        result.source === "fallback"
-          ? "Supabase indisponível ou não configurado. Exibindo projetos locais."
-          : null,
-      );
+      setUsingFallback(result.source === "fallback");
       setLoading(false);
     });
 
@@ -26,5 +24,5 @@ export function useProjects() {
     };
   }, []);
 
-  return { projects, loading, error };
+  return { projects, loading, usingFallback };
 }

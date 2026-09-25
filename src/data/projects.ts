@@ -20,29 +20,23 @@ export type Project = {
   featured?: boolean;
 };
 
+/**
+ * Fallback usado APENAS quando o Supabase está indisponível ou não configurado.
+ * A fonte de verdade do portfólio é a tabela `projects` no Supabase (editável em /admin).
+ *
+ * Regra: manter aqui somente projetos reais, com dados reais. Não duplicar entradas.
+ */
 export const projects: Project[] = [
   {
     id: "microfix",
-    name: "MicroFix Informática (EM CONSTRUÇÃO)",
+    name: "MicroFix Informática",
     category: "site",
     description:
       "Site institucional desenvolvido para fortalecer presença digital e geração de contatos.",
     technologies: ["WordPress", "HTML", "CSS", "JavaScript"],
     demoUrl: "https://microfixinformatica.com.br",
-    image: "https://microfixinformatica.com.br/wp-content/uploads/2026/08/Microfix-Informatica.png",
+    image: "/projects/microfixinformatica.png",
     accent: "#0a5cff",
     featured: true,
   },
-  {
-    id: "agencia ",
-    name: "MicroFix Informática (EM CONSTRUÇÃO)",
-    category: "site",
-    description:
-      "Site institucional desenvolvido para fortalecer presença digital e geração de contatos.",
-    technologies: ["WordPress", "HTML", "CSS", "JavaScript"],
-    demoUrl: "https://microfixinformatica.com.br",
-    image: "https://microfixinformatica.com.br/wp-content/uploads/2026/08/Microfix-Informatica.png",
-    accent: "#0a5cff",
-    featured: true,
-  }
 ];

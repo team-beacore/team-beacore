@@ -13,8 +13,10 @@ export function Logo({ size, href, className }: LogoProps) {
     <img
       src={LOGO_SRC}
       alt="Beacore — Digital Engineering"
-      width={2172}
-      height={724}
+      width={480}
+      height={160}
+      fetchPriority="high"
+      decoding="async"
       className={cn("h-auto select-none", className)}
       style={size ? { height: size } : undefined}
     />

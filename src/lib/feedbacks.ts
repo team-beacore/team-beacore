@@ -22,7 +22,7 @@ export async function getApprovedProjectFeedbacks(
   if (!isSupabaseConfigured) return null;
 
   try {
-    const { data, error } = await getSupabaseClient().rpc("get_approved_project_feedbacks", {
+    const { data, error } = await (await getSupabaseClient()).rpc("get_approved_project_feedbacks", {
       p_project_id: projectId,
     });
 

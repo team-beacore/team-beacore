@@ -87,7 +87,7 @@ export async function listAdminClients(): Promise<AdminClient[]> {
   if (!isSupabaseConfigured) return [];
 
   try {
-    const { data, error } = await getSupabaseClient().rpc("admin_list_clients");
+    const { data, error } = await (await getSupabaseClient()).rpc("admin_list_clients");
 
     if (error) {
       console.error("[adminClients] Falha ao listar clientes:", error.message);
@@ -107,7 +107,7 @@ export async function createAdminClient(
   if (!isSupabaseConfigured) return { ok: false, reason: "error" };
 
   try {
-    const { data, error } = await getSupabaseClient().rpc("admin_create_client", {
+    const { data, error } = await (await getSupabaseClient()).rpc("admin_create_client", {
       p_name: input.name,
       p_company: input.company,
       p_email: input.email,
@@ -136,7 +136,7 @@ export async function updateAdminClient(
   if (!isSupabaseConfigured) return { ok: false, reason: "error" };
 
   try {
-    const { data, error } = await getSupabaseClient().rpc("admin_update_client", {
+    const { data, error } = await (await getSupabaseClient()).rpc("admin_update_client", {
       p_client_id: id,
       p_name: input.name,
       p_company: input.company,
@@ -168,7 +168,7 @@ export async function setClientProjects(
   if (!isSupabaseConfigured) return { ok: false, reason: "error" };
 
   try {
-    const { data, error } = await getSupabaseClient().rpc("admin_set_client_projects", {
+    const { data, error } = await (await getSupabaseClient()).rpc("admin_set_client_projects", {
       p_client_id: clientId,
       p_project_ids: projectIds,
     });
