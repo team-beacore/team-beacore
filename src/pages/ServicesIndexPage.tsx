@@ -29,7 +29,7 @@ export function ServicesIndexPage() {
           className="absolute -top-40 left-1/2 h-72 w-[40rem] -translate-x-1/2 rounded-full bg-brand-500/10 blur-3xl"
         />
 
-        <div className="relative mx-auto w-full max-w-6xl px-5 pb-14 pt-28 sm:px-6 sm:pt-32 lg:px-8 lg:pt-36">
+        <div className="relative mx-auto w-full max-w-7xl px-5 pb-14 pt-28 sm:px-6 sm:pt-32 lg:px-8 lg:pt-36">
           <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Serviços" }]} />
 
           <h1 className="mt-8 max-w-3xl font-display text-[2rem] font-bold leading-[1.08] tracking-tight text-ink-950 text-balance sm:text-[2.75rem] lg:text-[3.25rem]">

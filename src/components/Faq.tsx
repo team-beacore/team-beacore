@@ -12,8 +12,6 @@ type FaqProps = {
   items: readonly FaqItem[];
   className?: string;
   tone?: "light" | "dark";
-  /** Mostra o índice (01, 02...) antes de cada pergunta. */
-  numbered?: boolean;
 };
 
 /**
@@ -24,7 +22,7 @@ type FaqProps = {
  * A animação é de height/opacity via Motion (que usa transform interno e
  * mede o conteúdo), e é dispensada quando o usuário pede movimento reduzido.
  */
-export function Faq({ items, className, tone = "light", numbered = false }: FaqProps) {
+export function Faq({ items, className, tone = "light" }: FaqProps) {
   const baseId = useId();
   const [open, setOpen] = useState<number | null>(0);
   const reduced = useReducedMotion();
@@ -40,10 +38,7 @@ export function Faq({ items, className, tone = "light", numbered = false }: FaqP
         return (
           <div
             key={item.question}
-            className={cn(
-              "relative transition-colors duration-300",
-              isDark && expanded && "bg-gradient-to-r from-brand-500/[0.06] to-transparent",
-            )}
+            className="relative"
           >
             {isDark && (
               <span
@@ -69,18 +64,8 @@ export function Faq({ items, className, tone = "light", numbered = false }: FaqP
                     : "text-ink-950 hover:text-brand-700",
                 )}
               >
-                <span className="flex items-baseline gap-4">
-                  {numbered && (
-                    <span
-                      aria-hidden="true"
-                      className={cn("font-mono text-xs", isDark ? "text-brand-400" : "text-brand-600")}
-                    >
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                  )}
-                  <span className="font-display text-base font-semibold leading-snug sm:text-lg">
-                    {item.question}
-                  </span>
+                <span className="font-display text-base font-semibold leading-snug sm:text-lg">
+                  {item.question}
                 </span>
                 <m.span
                   aria-hidden="true"
@@ -115,7 +100,6 @@ export function Faq({ items, className, tone = "light", numbered = false }: FaqP
                       "max-w-2xl pb-6 pr-10 text-sm leading-relaxed sm:text-[15px]",
                       isDark ? "text-ink-300" : "text-ink-600",
                       isDark && "px-4 sm:px-5",
-                      numbered && "sm:pl-[3.4rem]",
                     )}
                   >
                     {item.answer}

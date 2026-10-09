@@ -3,11 +3,9 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, m, useReducedMotion } from "motion/react";
 import { Core } from "../components/core/Core";
 import { SectionIntro } from "../components/experience/SectionIntro";
-import { Reveal } from "../components/motion/Reveal";
 import { ServiceDemo } from "../components/service/ServiceDemo";
 import { serviceIcon } from "../components/service/serviceIcon";
 import { services, servicePath, type Service } from "../content/services";
-import { usePointerSpotlight } from "../hooks/usePointerSpotlight";
 import { ArrowRightIcon } from "../lib/icons";
 import { cn } from "../lib/utils";
 
@@ -38,24 +36,21 @@ function ServiceCta({ service }: { service: Service }) {
 }
 
 /** Conteúdo textual do painel — o mesmo para o painel ativo e os ocultos. */
-function ServiceDetails({ service, index }: { service: Service; index: number }) {
+function ServiceDetails({ service }: { service: Service }) {
   return (
     <>
-      <p className="label-mono text-[10px] text-brand-400">
-        {String(index + 1).padStart(2, "0")} / {String(services.length).padStart(2, "0")}
-      </p>
-      <h3 className="mt-4 font-display text-3xl font-semibold tracking-[-0.035em] text-white sm:text-[2.6rem] sm:leading-[1.05]">
+      <h3 className="font-display text-3xl font-semibold tracking-[-0.035em] text-white sm:text-[2.6rem] sm:leading-[1.05]">
         {service.title}
       </h3>
       <p className="mt-4 max-w-md text-base leading-relaxed text-ink-300 sm:text-lg">{service.summary}</p>
 
       <dl className="mt-7 grid gap-5 border-t border-white/10 pt-6 text-sm sm:grid-cols-2">
         <div>
-          <dt className="label-mono text-[10px] text-ink-400">O problema</dt>
+          <dt className="text-ink-400">O problema</dt>
           <dd className="mt-2 leading-relaxed text-ink-300">{service.problem}</dd>
         </div>
         <div>
-          <dt className="label-mono text-[10px] text-ink-400">Entrega</dt>
+          <dt className="text-ink-400">O que você recebe</dt>
           <dd className="mt-2 leading-relaxed text-white">{service.highlight}</dd>
         </div>
       </dl>
@@ -76,14 +71,13 @@ function ServiceDetails({ service, index }: { service: Service; index: number })
  * pré-renderizado e disponível para leitores de tela.
  *
  * O painel ativo traz uma pequena demonstração visual da solução
- * (ServiceDemo) e uma luz que segue o cursor. No mobile, as abas viram uma
+ * (ServiceDemo) — o único elemento animado da seção. No mobile, as abas viram uma
  * faixa rolável de toque logo acima do painel.
  */
 export function Services() {
   const [active, setActive] = useState(0);
   const tabsRef = useRef<Array<HTMLButtonElement | null>>([]);
   const reduced = useReducedMotion();
-  const spotlight = usePointerSpotlight<HTMLDivElement>();
 
   const select = (index: number, focus = false) => {
     const next = (index + services.length) % services.length;
@@ -117,25 +111,12 @@ export function Services() {
       aria-labelledby="services-title"
       className="relative scroll-mt-24 overflow-hidden bg-night-900"
     >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-0 h-[30rem] w-[60rem] -translate-x-1/2 rounded-full bg-brand-700/[0.08] blur-[120px]"
-      />
-
       <div className="relative mx-auto w-full max-w-7xl px-5 pb-24 sm:px-6 sm:pb-28 lg:px-8 lg:pb-36">
-        <Reveal>
-          <SectionIntro
-            index="03"
-            eyebrow="Serviços"
-            id="services-title"
-            title={
-              <>
-                O que a Beacore faz<span className="text-brand-400">.</span>
-              </>
-            }
-            description="Seis frentes de trabalho. Cada uma resolve um tipo específico de problema."
-          />
-        </Reveal>
+        <SectionIntro
+          id="services-title"
+          title="O que a Beacore faz."
+          description="Seis frentes de trabalho. Cada uma resolve um tipo específico de problema — escolha uma para ver o que ela entrega."
+        />
 
         <div className="mt-12 grid gap-6 lg:mt-16 lg:grid-cols-[19rem_1fr] lg:gap-8">
           {/* ------------------------------------------------------- abas */}
@@ -163,31 +144,19 @@ export function Services() {
                   onClick={() => select(index)}
                   onKeyDown={onKeyDown}
                   className={cn(
-                    "group relative flex shrink-0 snap-start items-center gap-3.5 rounded-2xl border px-4 py-3.5 text-left transition-all duration-300 lg:w-full lg:py-4",
+                    "group relative flex shrink-0 snap-start items-center gap-3.5 rounded-xl border px-4 py-3.5 text-left transition-colors duration-300 lg:w-full lg:rounded-none lg:border-0 lg:border-l-2 lg:py-4 lg:pl-5",
                     selected
-                      ? "border-white/15 bg-white/[0.06]"
-                      : "border-transparent hover:border-white/[0.08] hover:bg-white/[0.025]",
+                      ? "border-white/15 bg-white/[0.06] lg:border-brand-400 lg:bg-transparent"
+                      : "border-white/[0.06] lg:border-white/[0.08] lg:hover:border-white/25",
                   )}
                 >
-                  {/* indicador do item ativo */}
-                  <span
+                  <Icon
                     aria-hidden="true"
                     className={cn(
-                      "absolute left-0 top-1/2 hidden h-8 w-[2px] -translate-y-1/2 rounded-full bg-brand-400 transition-transform duration-300 lg:block",
-                      selected ? "scale-y-100" : "scale-y-0",
+                      "h-[18px] w-[18px] shrink-0 transition-colors duration-300",
+                      selected ? "text-brand-300" : "text-ink-500 group-hover:text-ink-300",
                     )}
                   />
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-all duration-300",
-                      selected
-                        ? "border-brand-400/40 bg-brand-500/15 text-brand-200 shadow-[0_0_24px_-6px_rgb(47_114_255/0.8)]"
-                        : "border-white/10 text-ink-400 group-hover:text-white",
-                    )}
-                  >
-                    <Icon className="h-[18px] w-[18px]" />
-                  </span>
                   <span className="min-w-0">
                     <span
                       className={cn(
@@ -207,18 +176,7 @@ export function Services() {
           </div>
 
           {/* ---------------------------------------------------- painéis */}
-          <div
-            ref={spotlight}
-            className="spotlight relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-night-850"
-          >
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-grid-dark opacity-40 [mask-image:radial-gradient(ellipse_60%_70%_at_80%_40%,black,transparent)]"
-            />
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute -right-24 top-1/4 h-80 w-80 rounded-full bg-brand-600/20 blur-3xl"
-            />
+          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-night-850">
 
             {services.map((service, index) => {
               const selected = index === active;
@@ -234,7 +192,7 @@ export function Services() {
                 return (
                   <div key={service.id} {...panelProps} hidden>
                     <div className="p-7 sm:p-10">
-                      <ServiceDetails service={service} index={index} />
+                      <ServiceDetails service={service} />
                     </div>
                   </div>
                 );
@@ -252,7 +210,7 @@ export function Services() {
                       className="grid gap-8 p-7 sm:p-10 xl:grid-cols-[1fr_1.05fr] xl:items-center xl:gap-10"
                     >
                       <div>
-                        <ServiceDetails service={service} index={index} />
+                        <ServiceDetails service={service} />
                       </div>
                       <m.div
                         initial={reduced ? false : { opacity: 0, scale: 0.96, rotateX: 8 }}
@@ -270,25 +228,26 @@ export function Services() {
           </div>
         </div>
 
-        {/* Core indica o próximo passo para quem ainda não sabe qual escolher. */}
-        <div className="mt-12 flex flex-col items-start gap-6 sm:flex-row sm:items-end lg:mt-14">
-          <Core pose="pointing" className="w-24 shrink-0 sm:w-28" />
-          <div className="pb-2">
-            <p className="max-w-md text-base leading-relaxed text-ink-300">
-              Não sabe qual das frentes resolve o seu caso? Veja cada oferta em detalhe ou conte o
-              problema direto pra gente.
-            </p>
-            <Link
-              to="/servicos"
-              className="group mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white transition-colors hover:text-brand-300"
-            >
-              Ver todos os serviços
-              <ArrowRightIcon
-                aria-hidden="true"
-                className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </Link>
-          </div>
+        {/* Saída para quem ainda não sabe qual escolher — o Core pensa junto. */}
+        <div className="mt-10 flex items-center gap-5 lg:ml-[21rem]">
+        <Core pose="thinking-2" className="h-24 w-auto shrink-0 sm:h-28" />
+        <p className="max-w-2xl text-base leading-relaxed text-ink-300">
+          Não sabe qual das frentes resolve o seu caso?{" "}
+          <Link
+            to="/servicos"
+            className="font-semibold text-white underline decoration-white/25 underline-offset-4 transition-colors hover:decoration-brand-400"
+          >
+            Veja cada oferta em detalhe
+          </Link>{" "}
+          ou{" "}
+          <a
+            href="#contato"
+            className="font-semibold text-white underline decoration-white/25 underline-offset-4 transition-colors hover:decoration-brand-400"
+          >
+            conte o problema direto pra gente
+          </a>
+          .
+        </p>
         </div>
       </div>
     </section>

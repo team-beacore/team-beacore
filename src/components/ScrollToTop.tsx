@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { syncScrollPosition } from "./motion/gsap";
 
 /**
  * Restauração de scroll na navegação entre rotas.
@@ -10,6 +11,9 @@ import { useLocation } from "react-router-dom";
  *
  * Com hash, o navegador rola para o elemento; sem hash, volta ao topo.
  * Respeita prefers-reduced-motion ao escolher entre rolagem suave e instantânea.
+ *
+ * "instant", não "auto": `auto` herda o `scroll-behavior: smooth` do <html>,
+ * e a nova página aparecia rolando de volta desde a posição da anterior.
  */
 export function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -21,12 +25,15 @@ export function ScrollToTop() {
     if (hash) {
       const target = document.querySelector(hash);
       if (target) {
-        target.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
+        // Antes da rolagem: escrever a posição depois cancelaria o scroll suave.
+        syncScrollPosition();
+        target.scrollIntoView({ behavior: smooth ? "smooth" : "instant", block: "start" });
         return;
       }
     }
 
-    window.scrollTo({ top: 0, behavior: "auto" });
+    window.scrollTo({ top: 0, behavior: "instant" });
+    syncScrollPosition();
   }, [pathname, hash]);
 
   return null;

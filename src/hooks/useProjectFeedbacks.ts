@@ -4,6 +4,18 @@ import { getApprovedProjectFeedbacks, type ApprovedFeedback } from "../lib/feedb
 
 export type FeedbacksByProject = Record<string, ApprovedFeedback[]>;
 
+/** Cases e Prova Social chamam este hook; a consulta de cada projeto é feita uma vez. */
+const requests = new Map<string, Promise<ApprovedFeedback[] | null>>();
+
+function feedbacksOf(projectId: string) {
+  let request = requests.get(projectId);
+  if (!request) {
+    request = getApprovedProjectFeedbacks(projectId);
+    requests.set(projectId, request);
+  }
+  return request;
+}
+
 /**
  * Busca os depoimentos aprovados de uma lista de projetos, uma vez só.
  *
@@ -21,7 +33,7 @@ export function useProjectFeedbacks(projects: Project[], ready: boolean) {
 
     Promise.all(
       projects.map(async (project) => {
-        const feedbacks = await getApprovedProjectFeedbacks(project.id);
+        const feedbacks = await feedbacksOf(project.id);
         return [project.id, feedbacks ?? []] as const;
       }),
     ).then((entries) => {

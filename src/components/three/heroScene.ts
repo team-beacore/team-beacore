@@ -325,7 +325,9 @@ export function createHeroScene({
   // preservam as cores exatas do personagem (nenhuma luz o altera).
   const coreGroup = new Group();
   const coreHeight = compact ? 1.45 : 1.7;
-  coreGroup.position.set(compact ? -1.45 : -2.45, floor.position.y + 0.35, 1.6);
+  // x: fora da faixa em que o canvas esmaece à esquerda — o Core de moletom
+  // preto sumia no fundo quando ficava dentro dela.
+  coreGroup.position.set(compact ? -1.35 : -2.1, floor.position.y + 0.35, 1.6);
   root.add(coreGroup);
   const coreShadowMaterial = new MeshBasicMaterial({
     map: floorTexture,

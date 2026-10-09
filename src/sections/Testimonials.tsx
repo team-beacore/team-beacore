@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { AnimatePresence, m, useReducedMotion } from "motion/react";
 import { SectionIntro } from "../components/experience/SectionIntro";
-import { Reveal } from "../components/motion/Reveal";
 import { useProjects } from "../hooks/useProjects";
 import { useProjectFeedbacks } from "../hooks/useProjectFeedbacks";
 import { cn, initialsOf } from "../lib/utils";
@@ -40,18 +39,13 @@ export function Testimonials() {
       aria-labelledby="testimonials-title"
       className="relative scroll-mt-24 overflow-hidden bg-night-950"
     >
-      <div aria-hidden="true" className="hairline absolute inset-x-0 top-0 h-px" />
-
       <div className="relative mx-auto w-full max-w-7xl px-5 py-24 sm:px-6 sm:py-28 lg:px-8 lg:py-36">
-        <Reveal>
-          <SectionIntro
-            index="08"
-            eyebrow="Prova social"
-            id="testimonials-title"
-            title="O que dizem os clientes."
-            description="Depoimentos enviados diretamente pelos clientes dos projetos."
-          />
-        </Reveal>
+        <SectionIntro
+          id="testimonials-title"
+          size="md"
+          title="O que dizem os clientes."
+          description="Depoimentos enviados pelos próprios clientes, pelo link de feedback de cada projeto."
+        />
 
         <div className="mt-14 grid gap-10 lg:mt-20 lg:grid-cols-[1fr_18rem] lg:gap-16">
           <div aria-live="polite" className="relative min-h-[14rem]">
@@ -104,15 +98,10 @@ export function Testimonials() {
                     aria-pressed={active}
                     onClick={() => setIndex(i)}
                     className={cn(
-                      "flex items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors",
-                      active
-                        ? "border-white/20 bg-white/[0.06]"
-                        : "border-white/[0.06] hover:border-white/15",
+                      "flex items-center gap-3 border-l-2 py-2.5 pl-4 text-left transition-colors",
+                      active ? "border-brand-400" : "border-white/10 hover:border-white/30",
                     )}
                   >
-                    <span className="font-mono text-xs text-brand-400">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
                     <span className="min-w-0">
                       <span className={cn("block truncate text-sm font-medium", active ? "text-white" : "text-ink-400")}>
                         {name}

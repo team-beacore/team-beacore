@@ -86,7 +86,7 @@ export function CaseCard({
 
           {project.technologies.length > 0 && (
             <div className="mt-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-400">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-500">
                 Tecnologias
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
@@ -99,7 +99,7 @@ export function CaseCard({
 
           {quotes.length > 0 && (
             <div className="mt-6 border-t border-ink-100 pt-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-400">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-500">
                 O que o cliente disse
               </p>
               <div className="mt-3 space-y-3">

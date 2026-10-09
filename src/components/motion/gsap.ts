@@ -1,4 +1,5 @@
 import type { gsap as GsapType } from "gsap";
+import type { ScrollTrigger as ScrollTriggerType } from "gsap/ScrollTrigger";
 
 export type Gsap = typeof GsapType;
 
@@ -13,6 +14,23 @@ export type Gsap = typeof GsapType;
  * O registro do plugin acontece uma única vez, aqui.
  */
 let loader: Promise<Gsap> | null = null;
+let scrollTriggerApi: typeof ScrollTriggerType | null = null;
+
+/**
+ * Informa ao ScrollTrigger a posição de scroll real depois de uma troca de rota.
+ *
+ * O ScrollTrigger guarda o scroll em cache e, a cada `refresh()`, grava e
+ * RESTAURA essa posição. Na troca de rota o `watchLayout` dispara um refresh
+ * (a altura da página muda) e o valor em cache ainda era o da página anterior:
+ * a página nova abria no meio. Escrever a posição pela função de scroll do
+ * próprio ScrollTrigger atualiza o cache; depois, a memória gravada é limpa.
+ * Não faz nada se o GSAP ainda não carregou.
+ */
+export function syncScrollPosition(): void {
+  if (!scrollTriggerApi) return;
+  scrollTriggerApi.getScrollFunc(window)(window.scrollY);
+  scrollTriggerApi.clearScrollMemory();
+}
 
 /**
  * Mantém as posições de todos os ScrollTriggers corretas quando a altura da
@@ -46,6 +64,7 @@ export function loadGsap(): Promise<Gsap> {
     loader = Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(
       ([core, scrollTrigger]) => {
         core.gsap.registerPlugin(scrollTrigger.ScrollTrigger);
+        scrollTriggerApi = scrollTrigger.ScrollTrigger;
         watchLayout(scrollTrigger.ScrollTrigger);
         return core.gsap;
       },

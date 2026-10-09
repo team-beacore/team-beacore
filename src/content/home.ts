@@ -6,43 +6,52 @@
  * resultado, prazo, preço ou cliente.
  */
 
-/** Seção "O que você precisa resolver?" — cada item aponta para uma oferta. */
+/**
+ * Seção "O que você precisa resolver?" — cada item aponta para uma oferta.
+ * `core`: pose do mascote que ilustra a situação no painel lateral.
+ */
 export const needs = [
   {
     id: "site",
     label: "Preciso de um site profissional",
     detail: "Minha empresa não aparece na internet, ou aparece mal.",
     serviceId: "criacao-de-sites",
+    core: "search",
   },
   {
     id: "landing",
     label: "Quero uma página para vender",
     detail: "Tenho uma oferta e preciso de um destino para a campanha.",
     serviceId: "landing-pages",
+    core: "megaphone",
   },
   {
     id: "sistema",
     label: "Preciso de um sistema",
     detail: "Meu processo roda em planilha e já não dá conta.",
     serviceId: "sistemas-web",
+    core: "chart",
   },
   {
     id: "automacao",
     label: "Quero automatizar meu negócio",
     detail: "Minha equipe repete tarefas que a máquina poderia fazer.",
     serviceId: "automacoes",
+    core: "rocket",
   },
   {
     id: "ecommerce",
     label: "Quero vender pela internet",
     detail: "Preciso de uma loja com catálogo, carrinho e checkout.",
     serviceId: "ecommerce",
+    core: "target",
   },
   {
     id: "produto",
     label: "Tenho uma ideia de produto",
     detail: "Quero tirar do papel e validar sem construir tudo.",
     serviceId: "produtos-digitais",
+    core: "idea",
   },
 ] as const;
 

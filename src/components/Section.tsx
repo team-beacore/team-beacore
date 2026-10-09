@@ -24,7 +24,7 @@ export function Section({
 }: SectionProps) {
   return (
     <section id={id} className={cn("relative scroll-mt-24", tones[tone], className)}>
-      <div className={cn("mx-auto w-full max-w-6xl px-5 sm:px-6 lg:px-8", containerClassName)}>
+      <div className={cn("mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-8", containerClassName)}>
         {children}
       </div>
     </section>

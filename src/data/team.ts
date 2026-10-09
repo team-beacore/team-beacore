@@ -38,8 +38,8 @@ export const team: TeamMember[] = [
     id: "membro-3",
     photo: "/team/Andre.jpg",
     name: "André Silva",
-    role: "Full Stack Developer",
-    description: "Desenvolvimento de aplicações web, arquitetura e integração de sistemas.",
+    role: "Gestor de Tráfego",
+    description: "Anúncios no Meta e Google Ads que não apenas trazem contatos, mas guardam e acompanham cada cliente até o fechamento.",
     whatsapp: "558881623640",
   }
 ];

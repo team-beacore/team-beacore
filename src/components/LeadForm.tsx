@@ -1,10 +1,11 @@
-import { createContext, useContext, useId, useState, type FormEvent } from "react";
+import { createContext, useContext, useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { siteConfig } from "../config/site";
 import { goalOptions, needOptions, whatsappMessageForNeed } from "../data/leadOptions";
 import { submitLead, type LeadSource } from "../lib/leads";
 import { cn, whatsappUrl } from "../lib/utils";
 import { CheckIcon, SendIcon, WhatsAppIcon } from "../lib/icons";
 import { Button } from "./Button";
+import { Core } from "./core/Core";
 
 const inputClass =
   "w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-base text-ink-900 placeholder:text-ink-400 transition focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/10";
@@ -88,12 +89,21 @@ type LeadFormProps = {
 export function LeadForm({ source = "home", className, tone = "light" }: LeadFormProps) {
   const isDark = tone === "dark";
   const fieldClass = isDark ? inputClassDark : inputClass;
+  // Vazio = cor de placeholder (com `!`: a cor do campo vem depois no CSS e
+  // venceria). As opções mantêm a cor normal na lista aberta.
+  const selectClass = isDark ? "[&>option]:text-white" : "[&>option]:text-ink-900";
   const fieldId = useId();
   const [values, setValues] = useState<FormValues>(emptyValues);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<FormStatus>("idle");
   /** Honeypot: preenchido apenas por bots que completam todos os campos. */
   const [honeypot, setHoneypot] = useState("");
+  /** O formulário some no sucesso: o foco vai para a confirmação, não para o <body>. */
+  const successRef = useRef<HTMLHeadingElement | null>(null);
+
+  useEffect(() => {
+    if (status === "success") successRef.current?.focus();
+  }, [status]);
 
   const id = (field: string) => `${fieldId}-${field}`;
   const errorId = (field: string) => `${fieldId}-${field}-error`;
@@ -159,15 +169,19 @@ export function LeadForm({ source = "home", className, tone = "light" }: LeadFor
           className,
         )}
       >
-        <span
-          className={cn(
-            "inline-flex h-14 w-14 items-center justify-center rounded-full",
-            isDark ? "bg-emerald-400/15 text-emerald-300" : "bg-emerald-50 text-emerald-600",
-          )}
+        {/* No fundo escuro, o Core comemora; no claro (recortes de fundo preto), o ícone. */}
+        {isDark ? (
+          <Core pose="thumbs-up-2" className="h-32 w-auto" />
+        ) : (
+          <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+            <CheckIcon className="h-7 w-7" />
+          </span>
+        )}
+        <h3
+          ref={successRef}
+          tabIndex={-1}
+          className={cn("mt-5 font-display text-xl font-bold outline-none", isDark ? "text-white" : "text-ink-950")}
         >
-          <CheckIcon className="h-7 w-7" />
-        </span>
-        <h3 className={cn("mt-5 font-display text-xl font-bold", isDark ? "text-white" : "text-ink-950")}>
           Mensagem enviada!
         </h3>
         <p className={cn("mt-2 max-w-sm text-sm leading-relaxed", isDark ? "text-ink-300" : "text-ink-500")}>
@@ -219,6 +233,7 @@ export function LeadForm({ source = "home", className, tone = "light" }: LeadFor
             name="name"
             type="text"
             autoComplete="name"
+            maxLength={120}
             value={values.name}
             onChange={(event) => update("name", event.target.value)}
             disabled={submitting}
@@ -241,6 +256,7 @@ export function LeadForm({ source = "home", className, tone = "light" }: LeadFor
             name="email"
             type="email"
             autoComplete="email"
+            maxLength={254}
             value={values.email}
             onChange={(event) => update("email", event.target.value)}
             disabled={submitting}
@@ -293,7 +309,7 @@ export function LeadForm({ source = "home", className, tone = "light" }: LeadFor
             disabled={submitting}
             aria-invalid={Boolean(errors.need)}
             aria-describedby={errors.need ? errorId("need") : undefined}
-            className={cn(fieldClass, !values.need && "text-ink-500", errors.need && invalidClass)}
+            className={cn(fieldClass, selectClass, !values.need && "text-ink-500!", errors.need && invalidClass)}
           >
             <option value="">Selecione</option>
             {needOptions.map((option) => (
@@ -319,7 +335,7 @@ export function LeadForm({ source = "home", className, tone = "light" }: LeadFor
             disabled={submitting}
             aria-invalid={Boolean(errors.goal)}
             aria-describedby={errors.goal ? errorId("goal") : undefined}
-            className={cn(fieldClass, !values.goal && "text-ink-500", errors.goal && invalidClass)}
+            className={cn(fieldClass, selectClass, !values.goal && "text-ink-500!", errors.goal && invalidClass)}
           >
             <option value="">Selecione</option>
             {goalOptions.map((option) => (

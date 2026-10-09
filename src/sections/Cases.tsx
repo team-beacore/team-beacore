@@ -1,8 +1,5 @@
-import { useState, type PointerEvent as ReactPointerEvent } from "react";
-import { m, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react";
-import { Core } from "../components/core/Core";
+import { useState } from "react";
 import { SectionIntro } from "../components/experience/SectionIntro";
-import { Reveal } from "../components/motion/Reveal";
 import { useGsapScene } from "../components/motion/useGsapScene";
 import { projectCategories, type Project, type ProjectCategory } from "../data/projects";
 import { useProjects } from "../hooks/useProjects";
@@ -33,8 +30,12 @@ function hostOf(url: string): string {
   }
 }
 
-/** Prévia do projeto: screenshot real ou, sem imagem, a cor do projeto. */
-function ProjectPreview({ project, priority }: { project: Project; priority?: boolean }) {
+/**
+ * Prévia do projeto: screenshot real ou, sem imagem, a cor do projeto.
+ * Sempre `lazy`: os cases ficam bem abaixo da dobra, e um screenshot "eager"
+ * disputava banda com o JavaScript principal no carregamento.
+ */
+function ProjectPreview({ project }: { project: Project }) {
   if (project.image) {
     return (
       <img
@@ -42,9 +43,9 @@ function ProjectPreview({ project, priority }: { project: Project; priority?: bo
         alt={`Prévia do projeto ${project.name}`}
         width={1200}
         height={640}
-        loading={priority ? "eager" : "lazy"}
+        loading="lazy"
         decoding="async"
-        className="h-full w-full object-cover object-top transition-transform duration-[1.2s] ease-out group-hover/mock:scale-[1.03]"
+        className="h-full w-full object-cover object-top"
       />
     );
   }
@@ -66,72 +67,36 @@ function ProjectPreview({ project, priority }: { project: Project; priority?: bo
 }
 
 /**
- * Notebook em CSS com o screenshot real na tela. Inclina seguindo o cursor
- * (Motion, com mola) — o contêiner externo é animado pelo GSAP no scroll, então
- * as duas bibliotecas nunca atuam sobre o mesmo elemento.
+ * Notebook em CSS com o screenshot real na tela. O movimento fica todo no
+ * scroll (cena GSAP do capítulo): sem inclinação por cursor nem reflexo, o
+ * trabalho publicado é o protagonista.
  */
-function LaptopMockup({ project, priority }: { project: Project; priority?: boolean }) {
-  const reduced = useReducedMotion();
-  const px = useMotionValue(0);
-  const py = useMotionValue(0);
-  const rotateY = useSpring(useTransform(px, [-0.5, 0.5], [-6, 6]), { stiffness: 140, damping: 18 });
-  const rotateX = useSpring(useTransform(py, [-0.5, 0.5], [5, -5]), { stiffness: 140, damping: 18 });
-  const glareX = useTransform(px, [-0.5, 0.5], ["15%", "85%"]);
-  const glare = useTransform(
-    glareX,
-    (x) => `radial-gradient(520px circle at ${x} 0%, rgb(255 255 255 / 0.14), transparent 55%)`,
-  );
-
-  const onMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (reduced || event.pointerType !== "mouse") return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    px.set((event.clientX - rect.left) / rect.width - 0.5);
-    py.set((event.clientY - rect.top) / rect.height - 0.5);
-  };
-  const onLeave = () => {
-    px.set(0);
-    py.set(0);
-  };
-
+function LaptopMockup({ project }: { project: Project }) {
   return (
-    <div onPointerMove={onMove} onPointerLeave={onLeave} className="group/mock relative [perspective:1800px]">
-      {/* Valores ficam em 0 com movimento reduzido: onMove não os altera. */}
-      <m.div style={{ rotateX, rotateY }} className="relative [transform-style:preserve-3d]">
-        {/* tela */}
-        <div className="relative rounded-t-[1.1rem] border border-white/15 bg-[#0b0d14] p-[1.6%] pb-[2.2%] shadow-[0_50px_120px_-40px_rgb(0_0_0/0.95)]">
-          <span aria-hidden="true" className="absolute left-1/2 top-[0.55%] h-1 w-1 -translate-x-1/2 rounded-full bg-white/20" />
-          <div className="overflow-hidden rounded-md bg-night-900">
-            <div className="flex items-center gap-1.5 border-b border-white/[0.07] bg-white/[0.03] px-3 py-2">
-              <span className="h-2 w-2 rounded-full bg-white/15" />
-              <span className="h-2 w-2 rounded-full bg-white/15" />
-              <span className="h-2 w-2 rounded-full bg-brand-400/80" />
-              <span className="ml-2 truncate rounded bg-white/[0.05] px-2.5 py-0.5 font-mono text-[10px] text-ink-400 sm:text-[11px]">
-                {hostOf(project.demoUrl)}
-              </span>
-            </div>
-            <div className="aspect-[1200/640] overflow-hidden">
-              <ProjectPreview project={project} priority={priority} />
-            </div>
+    <div className="relative">
+      {/* tela */}
+      <div className="relative rounded-t-[1.1rem] border border-white/15 bg-[#0b0d14] p-[1.6%] pb-[2.2%] shadow-[0_50px_120px_-40px_rgb(0_0_0/0.95)]">
+        <div className="overflow-hidden rounded-md bg-night-900">
+          <div className="flex items-center gap-1.5 border-b border-white/[0.07] bg-white/[0.03] px-3 py-2">
+            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-white/15" />
+            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-white/15" />
+            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-white/15" />
+            <span className="ml-2 truncate rounded bg-white/[0.05] px-2.5 py-0.5 font-mono text-[10px] text-ink-300 sm:text-[11px]">
+              {hostOf(project.demoUrl)}
+            </span>
           </div>
-          <m.div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 rounded-t-[1.1rem] mix-blend-overlay motion-reduce:hidden"
-            style={{ background: glare }}
-          />
+          <div className="aspect-[1200/640] overflow-hidden">
+            <ProjectPreview project={project} />
+          </div>
         </div>
-        {/* base */}
-        <div
-          aria-hidden="true"
-          className="relative mx-[-4%] h-3.5 rounded-b-[1.2rem] rounded-t-sm bg-gradient-to-b from-[#2a2f3c] to-[#11141c] shadow-[0_20px_40px_-12px_rgb(0_0_0/0.9)]"
-        >
-          <span className="absolute left-1/2 top-0 h-1.5 w-[14%] -translate-x-1/2 rounded-b-md bg-black/40" />
-        </div>
-      </m.div>
-
+      </div>
+      {/* base */}
       <div
         aria-hidden="true"
-        className="absolute -bottom-10 left-1/2 -z-10 h-24 w-3/4 -translate-x-1/2 rounded-[100%] bg-brand-600/25 blur-3xl transition-colors duration-700 group-hover/mock:bg-brand-500/40"
-      />
+        className="relative mx-[-4%] h-3.5 rounded-b-[1.2rem] rounded-t-sm bg-gradient-to-b from-[#2a2f3c] to-[#11141c] shadow-[0_20px_40px_-12px_rgb(0_0_0/0.9)]"
+      >
+        <span className="absolute left-1/2 top-0 h-1.5 w-[14%] -translate-x-1/2 rounded-b-md bg-black/40" />
+      </div>
     </div>
   );
 }
@@ -140,7 +105,7 @@ function Quotes({ feedbacks }: { feedbacks: ApprovedFeedback[] }) {
   if (feedbacks.length === 0) return null;
   return (
     <div className="mt-7 space-y-3 border-t border-white/10 pt-6">
-      <p className="label-mono text-[10px] text-ink-400">O que o cliente disse</p>
+      <p className="text-sm text-ink-400">O que o cliente disse</p>
       {feedbacks.map((feedback) => (
         <figure key={feedback.id} className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5">
           <blockquote className="text-sm leading-relaxed text-ink-200">“{feedback.content}”</blockquote>
@@ -175,14 +140,14 @@ function ProjectChapter({
       className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14"
     >
       <div data-case="mock" className={cn("lg:col-span-7", flipped && "lg:order-2")}>
-        <LaptopMockup project={project} priority={index === 0} />
+        <LaptopMockup project={project} />
       </div>
 
       <div data-case="info" className={cn("lg:col-span-5", flipped && "lg:order-1")}>
-        <p className="flex items-center gap-3">
-          <span className="font-mono text-sm text-brand-400">{String(index + 1).padStart(2, "0")}</span>
-          <span aria-hidden="true" className="h-px w-8 bg-white/20" />
-          <span className="label-mono text-[10px] text-ink-400">{categoryLabels[project.category]}</span>
+        <p className="text-sm text-ink-400">
+          {categoryLabels[project.category]}
+          <span aria-hidden="true" className="mx-2 text-ink-600">·</span>
+          {hostOf(project.demoUrl)}
         </p>
         <h3
           id={`case-title-${project.id}`}
@@ -293,29 +258,19 @@ export function Cases() {
       ref={ref}
       id="projetos"
       aria-labelledby="cases-title"
-      className="relative scroll-mt-24 overflow-hidden bg-night-900"
+      className="relative scroll-mt-24 overflow-hidden border-t border-white/[0.06] bg-night-900"
     >
-      <div aria-hidden="true" className="hairline absolute inset-x-0 top-0 h-px" />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute right-[-10%] top-1/4 h-[34rem] w-[34rem] rounded-full bg-brand-600/[0.1] blur-[130px]"
-      />
 
       <div className="relative mx-auto w-full max-w-7xl px-5 py-24 sm:px-6 sm:py-28 lg:px-8 lg:py-36">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <Reveal>
-            <SectionIntro
-              index="04"
-              eyebrow="Cases"
-              id="cases-title"
-              title="O que já colocamos no ar."
-              description="Projetos reais, com o que foi construído e as tecnologias usadas em cada um."
-            />
-          </Reveal>
+          <SectionIntro
+            id="cases-title"
+            size="xl"
+            title="O que já colocamos no ar."
+            description="Projetos reais, publicados e em uso — com o que foi construído e as tecnologias de cada um."
+          />
 
           <div className="flex flex-col items-start gap-6 lg:items-end">
-            {/* Detalhe discreto: o Core examinando os projetos. */}
-            <Core pose="search" className="hidden w-20 lg:block lg:w-24" />
             {filters.length > 2 && (
               <div role="group" aria-label="Filtrar cases por tipo" className="flex flex-wrap gap-2">
                 {filters.map((item) => {

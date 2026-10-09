@@ -5,7 +5,6 @@ import { Button } from "../Button";
 import { Faq } from "../Faq";
 import { CaseCard } from "../CaseCard";
 import { Reveal, Stagger, StaggerItem } from "../motion/Reveal";
-import { MotionCard } from "../motion/MotionCard";
 import { useGsapScene } from "../motion/useGsapScene";
 import { serviceIcon } from "./serviceIcon";
 import { Breadcrumbs } from "../Breadcrumbs";
@@ -56,7 +55,7 @@ export function ServiceHero({ service }: { service: WithPage }) {
         className="absolute -top-40 right-[10%] h-80 w-80 rounded-full bg-brand-500/12 blur-3xl"
       />
 
-      <div className="relative mx-auto w-full max-w-6xl px-5 pb-16 pt-28 sm:px-6 sm:pt-32 lg:px-8 lg:pb-20 lg:pt-36">
+      <div className="relative mx-auto w-full max-w-7xl px-5 pb-16 pt-28 sm:px-6 sm:pt-32 lg:px-8 lg:pb-20 lg:pt-36">
         <div data-sh="crumb">
           <Breadcrumbs
             items={[
@@ -179,15 +178,14 @@ export function ServiceAudience({ service }: { service: WithPage }) {
           description={audience.description}
         />
 
+        {/* Cartões estáticos: não são clicáveis, então não reagem ao hover. */}
         <Stagger as="ul" className="mt-12 grid gap-4 sm:grid-cols-2 lg:mt-14">
           {audience.items.map((item) => (
             <StaggerItem as="li" key={item.title}>
-              <MotionCard as="article" lift={3} className="h-full">
-                <div className="h-full rounded-2xl card-surface p-6 transition-[border-color,box-shadow] duration-300 hover:card-accent sm:p-7">
-                  <h3 className="font-display text-lg font-semibold text-ink-950">{item.title}</h3>
-                  <p className="mt-2.5 text-sm leading-relaxed text-ink-600">{item.description}</p>
-                </div>
-              </MotionCard>
+              <article className="h-full rounded-2xl card-surface p-6 sm:p-7">
+                <h3 className="font-display text-lg font-semibold text-ink-950">{item.title}</h3>
+                <p className="mt-2.5 text-sm leading-relaxed text-ink-600">{item.description}</p>
+              </article>
             </StaggerItem>
           ))}
         </Stagger>
@@ -207,7 +205,7 @@ export function ServiceDeliverables({ service }: { service: WithPage }) {
         aria-hidden="true"
         className="absolute inset-0 bg-grid-dark [mask-image:radial-gradient(ellipse_60%_55%_at_50%_0%,black,transparent)]"
       />
-      <div className="relative mx-auto w-full max-w-6xl px-5 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
+      <div className="relative mx-auto w-full max-w-7xl px-5 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
           <div>
             <SectionHeading
@@ -244,25 +242,27 @@ export function ServiceBenefits({ service }: { service: WithPage }) {
   return (
     <Section>
       <div className="py-20 sm:py-24 lg:py-28">
-        <SectionHeading eyebrow="Diferenciais" title={benefits.title} />
+        <SectionHeading eyebrow="Diferenciais" title={benefits.title} align="left" />
 
-        <Stagger as="ul" className="mt-12 grid gap-4 sm:grid-cols-2 lg:mt-14">
-          {benefits.items.map((item, index) => (
-            <StaggerItem as="li" key={item.title}>
-              <MotionCard as="article" lift={3} className="h-full">
-                <div className="h-full rounded-2xl card-surface p-6 transition-[border-color,box-shadow] duration-300 hover:card-accent sm:p-7">
-                  <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-600">
-                    {String(index + 1).padStart(2, "0")}
-                  </p>
-                  <h3 className="mt-3 font-display text-lg font-semibold text-ink-950">
-                    {item.title}
-                  </h3>
-                  <p className="mt-2.5 text-sm leading-relaxed text-ink-600">{item.description}</p>
-                </div>
-              </MotionCard>
-            </StaggerItem>
+        {/*
+          Lista tipográfica, não outra grade de cards: logo acima já há uma
+          ("Para quem é"). Afirmação à esquerda, justificativa à direita.
+        */}
+        <dl className="mt-12 border-t border-ink-100 lg:mt-14">
+          {benefits.items.map((item) => (
+            <div
+              key={item.title}
+              className="grid gap-2 border-b border-ink-100 py-7 lg:grid-cols-[1fr_1.2fr] lg:gap-16"
+            >
+              <dt className="font-display text-xl font-semibold tracking-[-0.02em] text-ink-950 sm:text-2xl">
+                {item.title}
+              </dt>
+              <dd className="max-w-xl text-base leading-relaxed text-ink-600 lg:pt-1">
+                {item.description}
+              </dd>
+            </div>
           ))}
-        </Stagger>
+        </dl>
       </div>
     </Section>
   );
@@ -395,7 +395,7 @@ export function ServiceCTA({ service }: { service: WithPage }) {
         className="absolute bottom-0 left-1/2 h-64 w-[34rem] -translate-x-1/2 translate-y-1/3 rounded-full bg-brand-600/25 blur-3xl"
       />
 
-      <div className="relative mx-auto w-full max-w-6xl px-5 py-24 sm:px-6 lg:px-8 lg:py-28">
+      <div className="relative mx-auto w-full max-w-7xl px-5 py-24 sm:px-6 lg:px-8 lg:py-28">
         <Reveal>
           <div className="mx-auto max-w-2xl text-center">
             <h2

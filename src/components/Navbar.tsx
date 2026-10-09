@@ -143,9 +143,10 @@ function ServicesDropdown() {
 
                   const inner = (
                     <>
-                      <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-ink-300 transition-colors group-hover/item:border-brand-500/40 group-hover/item:bg-brand-500/10 group-hover/item:text-brand-300">
-                        <Icon className="h-4 w-4" />
-                      </span>
+                      <Icon
+                        aria-hidden="true"
+                        className="mt-0.5 h-4 w-4 shrink-0 text-ink-400 transition-colors group-hover/item:text-brand-300"
+                      />
                       <span className="min-w-0">
                         <span className="block text-[13px] font-semibold text-white">
                           {service.title}
@@ -268,7 +269,7 @@ export function Navbar() {
     >
       <nav
         aria-label="Navegação principal"
-        className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-6 lg:h-[72px] lg:px-8"
+        className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 sm:px-6 lg:h-[72px] lg:px-8"
       >
         <Link to="/" aria-label="Beacore — Início" className="inline-flex items-center">
           <Logo tone="light" className="w-24 lg:w-28" />

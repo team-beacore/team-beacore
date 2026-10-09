@@ -22,8 +22,8 @@ export function Footer() {
 
   return (
     <footer className="bg-ink-950 text-ink-300">
-      <div className="mx-auto w-full max-w-6xl px-5 sm:px-6 lg:px-8">
-        <div className="grid gap-12 py-16 md:grid-cols-4 md:gap-8 lg:py-20">
+      <div className="mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-8">
+        <div className="grid gap-12 py-16 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-4 lg:py-20">
           <div>
             <p className="font-display text-xl font-bold tracking-[0.18em] text-white">BEACORE</p>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-ink-400">{slogan}</p>
@@ -46,7 +46,7 @@ export function Footer() {
           </div>
 
           <nav aria-label="Serviços">
-            <h3 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
+            <h3 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-ink-400">
               Serviços
             </h3>
             <ul className="mt-4 space-y-2.5">
@@ -72,7 +72,7 @@ export function Footer() {
           </nav>
 
           <nav aria-label="Links do rodapé">
-            <h3 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
+            <h3 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-ink-400">
               Navegação
             </h3>
             <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3">
@@ -90,7 +90,7 @@ export function Footer() {
           </nav>
 
           <div>
-            <h3 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
+            <h3 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-ink-400">
               Contato
             </h3>
             <ul className="mt-4 space-y-3">
@@ -100,7 +100,7 @@ export function Footer() {
                   className="inline-flex items-center gap-2.5 text-sm text-ink-400 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                 >
                   <MailIcon className="h-4 w-4 shrink-0 text-ink-500" />
-                  {contact.email}
+                  <span className="break-all">{contact.email}</span>
                 </a>
               </li>
               <li>
@@ -119,12 +119,12 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 py-6 sm:flex-row">
-          <p className="text-xs text-ink-500">
+          <p className="text-xs text-ink-400">
             © 2026 Beacore
             <span aria-hidden="true" className="mx-2 text-ink-700">
               ·
             </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-ink-600">
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-ink-400">
               Digital Engineering
             </span>
           </p>
@@ -133,7 +133,7 @@ export function Footer() {
             href={siteConfig.siteUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs text-ink-500 transition-colors hover:text-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            className="inline-flex items-center gap-1.5 text-xs text-ink-400 transition-colors hover:text-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
           >
             <span>Desenvolvido por</span>
             <span className="font-display font-bold tracking-[0.18em] text-white transition-colors hover:text-brand-400">
