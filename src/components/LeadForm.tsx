@@ -1,4 +1,4 @@
-import { useId, useState, type FormEvent } from "react";
+import { createContext, useContext, useId, useState, type FormEvent } from "react";
 import { siteConfig } from "../config/site";
 import { goalOptions, needOptions, whatsappMessageForNeed } from "../data/leadOptions";
 import { submitLead, type LeadSource } from "../lib/leads";
@@ -9,6 +9,13 @@ import { Button } from "./Button";
 const inputClass =
   "w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-base text-ink-900 placeholder:text-ink-400 transition focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/10";
 const invalidClass = "border-red-400 focus:border-red-500 focus:ring-red-500/10";
+
+/** Variante para fundos escuros (Home). Só o visual muda — a lógica é a mesma. */
+const inputClassDark =
+  "w-full rounded-xl border border-white/12 bg-white/[0.04] px-4 py-3 text-base text-white placeholder:text-ink-500 transition focus:border-brand-400 focus:bg-white/[0.06] focus:outline-none focus:ring-4 focus:ring-brand-500/15";
+
+type Tone = "light" | "dark";
+const ToneContext = createContext<Tone>("light");
 
 const MIN_NAME = 2;
 const MIN_MESSAGE = 10;
@@ -74,9 +81,13 @@ type LeadFormProps = {
   /** De onde o lead veio. As páginas de serviço usarão valores específicos. */
   source?: LeadSource;
   className?: string;
+  /** `dark`: campos e textos para fundos escuros. Padrão: claro. */
+  tone?: Tone;
 };
 
-export function LeadForm({ source = "home", className }: LeadFormProps) {
+export function LeadForm({ source = "home", className, tone = "light" }: LeadFormProps) {
+  const isDark = tone === "dark";
+  const fieldClass = isDark ? inputClassDark : inputClass;
   const fieldId = useId();
   const [values, setValues] = useState<FormValues>(emptyValues);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -143,20 +154,28 @@ export function LeadForm({ source = "home", className }: LeadFormProps) {
       <div
         role="status"
         className={cn(
-          "flex h-full flex-col items-center justify-center rounded-2xl border border-ink-100 bg-white p-10 text-center",
+          "flex h-full flex-col items-center justify-center rounded-2xl border p-10 text-center",
+          isDark ? "border-white/10 bg-night-850" : "border-ink-100 bg-white",
           className,
         )}
       >
-        <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+        <span
+          className={cn(
+            "inline-flex h-14 w-14 items-center justify-center rounded-full",
+            isDark ? "bg-emerald-400/15 text-emerald-300" : "bg-emerald-50 text-emerald-600",
+          )}
+        >
           <CheckIcon className="h-7 w-7" />
         </span>
-        <h3 className="mt-5 font-display text-xl font-bold text-ink-950">Mensagem enviada!</h3>
-        <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink-500">
+        <h3 className={cn("mt-5 font-display text-xl font-bold", isDark ? "text-white" : "text-ink-950")}>
+          Mensagem enviada!
+        </h3>
+        <p className={cn("mt-2 max-w-sm text-sm leading-relaxed", isDark ? "text-ink-300" : "text-ink-500")}>
           Recebemos sua mensagem. Em breve entraremos em contato.
         </p>
         <div className="mt-7 flex flex-col gap-3 sm:flex-row">
           <Button
-            variant="secondary"
+            variant={isDark ? "outline-light" : "secondary"}
             onClick={() => {
               setValues(emptyValues);
               setErrors({});
@@ -180,8 +199,13 @@ export function LeadForm({ source = "home", className }: LeadFormProps) {
     <form
       onSubmit={handleSubmit}
       noValidate
-      className={cn("rounded-2xl border border-ink-100 bg-white p-6 sm:p-8", className)}
+      className={cn(
+        "rounded-2xl border p-6 sm:p-8",
+        isDark ? "border-white/10 bg-night-850 [color-scheme:dark]" : "border-ink-100 bg-white",
+        className,
+      )}
     >
+      <ToneContext.Provider value={tone}>
       <div className="grid gap-5 sm:grid-cols-2">
         <Field
           id={id("name")}
@@ -200,7 +224,7 @@ export function LeadForm({ source = "home", className }: LeadFormProps) {
             disabled={submitting}
             aria-invalid={Boolean(errors.name)}
             aria-describedby={errors.name ? errorId("name") : undefined}
-            className={cn(inputClass, errors.name && invalidClass)}
+            className={cn(fieldClass, errors.name && invalidClass)}
             placeholder="Seu nome"
           />
         </Field>
@@ -222,7 +246,7 @@ export function LeadForm({ source = "home", className }: LeadFormProps) {
             disabled={submitting}
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? errorId("email") : undefined}
-            className={cn(inputClass, errors.email && invalidClass)}
+            className={cn(fieldClass, errors.email && invalidClass)}
             placeholder="voce@empresa.com"
           />
         </Field>
@@ -247,7 +271,7 @@ export function LeadForm({ source = "home", className }: LeadFormProps) {
             disabled={submitting}
             aria-invalid={Boolean(errors.whatsapp)}
             aria-describedby={errors.whatsapp ? errorId("whatsapp") : undefined}
-            className={cn(inputClass, errors.whatsapp && invalidClass)}
+            className={cn(fieldClass, errors.whatsapp && invalidClass)}
             placeholder="(00) 00000-0000"
           />
         </Field>
@@ -269,7 +293,7 @@ export function LeadForm({ source = "home", className }: LeadFormProps) {
             disabled={submitting}
             aria-invalid={Boolean(errors.need)}
             aria-describedby={errors.need ? errorId("need") : undefined}
-            className={cn(inputClass, !values.need && "text-ink-500", errors.need && invalidClass)}
+            className={cn(fieldClass, !values.need && "text-ink-500", errors.need && invalidClass)}
           >
             <option value="">Selecione</option>
             {needOptions.map((option) => (
@@ -295,7 +319,7 @@ export function LeadForm({ source = "home", className }: LeadFormProps) {
             disabled={submitting}
             aria-invalid={Boolean(errors.goal)}
             aria-describedby={errors.goal ? errorId("goal") : undefined}
-            className={cn(inputClass, !values.goal && "text-ink-500", errors.goal && invalidClass)}
+            className={cn(fieldClass, !values.goal && "text-ink-500", errors.goal && invalidClass)}
           >
             <option value="">Selecione</option>
             {goalOptions.map((option) => (
@@ -325,7 +349,7 @@ export function LeadForm({ source = "home", className }: LeadFormProps) {
             disabled={submitting}
             aria-invalid={Boolean(errors.message)}
             aria-describedby={errors.message ? errorId("message") : undefined}
-            className={cn(inputClass, "resize-none", errors.message && invalidClass)}
+            className={cn(fieldClass, "resize-none", errors.message && invalidClass)}
             placeholder="Conte sobre o seu projeto..."
           />
         </Field>
@@ -348,7 +372,10 @@ export function LeadForm({ source = "home", className }: LeadFormProps) {
       {status === "error" && (
         <div
           role="alert"
-          className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm leading-relaxed text-red-800"
+          className={cn(
+            "mt-6 rounded-xl border p-4 text-sm leading-relaxed",
+            isDark ? "border-red-400/30 bg-red-500/10 text-red-200" : "border-red-200 bg-red-50 text-red-800",
+          )}
         >
           <p>
             Não conseguimos enviar sua mensagem agora. Tente novamente ou fale conosco pelo
@@ -358,7 +385,10 @@ export function LeadForm({ source = "home", className }: LeadFormProps) {
             href={whatsappHref}
             target="_blank"
             rel="noreferrer"
-            className="mt-3 inline-flex items-center gap-2 font-semibold text-red-900 underline underline-offset-4 transition-colors hover:text-red-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+            className={cn(
+              "mt-3 inline-flex items-center gap-2 font-semibold underline underline-offset-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600",
+              isDark ? "text-red-100 hover:text-white" : "text-red-900 hover:text-red-950",
+            )}
           >
             <WhatsAppIcon className="h-4 w-4" />
             Falar pelo WhatsApp
@@ -372,6 +402,7 @@ export function LeadForm({ source = "home", className }: LeadFormProps) {
           {submitting ? "Enviando..." : "Enviar mensagem"}
         </Button>
       </div>
+      </ToneContext.Provider>
     </form>
   );
 }
@@ -387,21 +418,27 @@ type FieldProps = {
 };
 
 function Field({ id, errorId, label, required, hint, error, children }: FieldProps) {
+  const isDark = useContext(ToneContext) === "dark";
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-ink-700">
+      <label
+        htmlFor={id}
+        className={cn("mb-1.5 block text-sm font-medium", isDark ? "text-ink-200" : "text-ink-700")}
+      >
         {label}
         {required && (
-          <span aria-hidden="true" className="text-brand-600">
+          <span aria-hidden="true" className={isDark ? "text-brand-300" : "text-brand-600"}>
             {" "}
             *
           </span>
         )}
-        {hint && <span className="ml-1 font-normal text-ink-500">({hint})</span>}
+        {hint && (
+          <span className={cn("ml-1 font-normal", isDark ? "text-ink-400" : "text-ink-500")}>({hint})</span>
+        )}
       </label>
       {children}
       {error && (
-        <p id={errorId} className="mt-1.5 text-sm font-medium text-red-600">
+        <p id={errorId} className={cn("mt-1.5 text-sm font-medium", isDark ? "text-red-300" : "text-red-600")}>
           {error}
         </p>
       )}

@@ -1,86 +1,296 @@
+import { useRef, useState, type KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
-import { Section } from "../components/Section";
-import { SectionHeading } from "../components/SectionHeading";
-import { Stagger, StaggerItem } from "../components/motion/Reveal";
-import { MotionCard } from "../components/motion/MotionCard";
-import { services, servicePath } from "../content/services";
+import { AnimatePresence, m, useReducedMotion } from "motion/react";
+import { Core } from "../components/core/Core";
+import { SectionIntro } from "../components/experience/SectionIntro";
+import { Reveal } from "../components/motion/Reveal";
+import { ServiceDemo } from "../components/service/ServiceDemo";
 import { serviceIcon } from "../components/service/serviceIcon";
+import { services, servicePath, type Service } from "../content/services";
+import { usePointerSpotlight } from "../hooks/usePointerSpotlight";
 import { ArrowRightIcon } from "../lib/icons";
+import { cn } from "../lib/utils";
+
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+/** CTA de cada oferta: página própria quando existe; senão, o contato. */
+function ServiceCta({ service }: { service: Service }) {
+  const className =
+    "group/cta inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-night-950 transition-colors hover:bg-brand-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-400";
+  const content = (
+    <>
+      {service.cta}
+      <ArrowRightIcon
+        aria-hidden="true"
+        className="h-4 w-4 transition-transform duration-300 group-hover/cta:translate-x-1"
+      />
+    </>
+  );
+  return service.page ? (
+    <Link to={servicePath(service)} className={className}>
+      {content}
+    </Link>
+  ) : (
+    <a href="/#contato" className={className}>
+      {content}
+    </a>
+  );
+}
+
+/** Conteúdo textual do painel — o mesmo para o painel ativo e os ocultos. */
+function ServiceDetails({ service, index }: { service: Service; index: number }) {
+  return (
+    <>
+      <p className="label-mono text-[10px] text-brand-400">
+        {String(index + 1).padStart(2, "0")} / {String(services.length).padStart(2, "0")}
+      </p>
+      <h3 className="mt-4 font-display text-3xl font-semibold tracking-[-0.035em] text-white sm:text-[2.6rem] sm:leading-[1.05]">
+        {service.title}
+      </h3>
+      <p className="mt-4 max-w-md text-base leading-relaxed text-ink-300 sm:text-lg">{service.summary}</p>
+
+      <dl className="mt-7 grid gap-5 border-t border-white/10 pt-6 text-sm sm:grid-cols-2">
+        <div>
+          <dt className="label-mono text-[10px] text-ink-400">O problema</dt>
+          <dd className="mt-2 leading-relaxed text-ink-300">{service.problem}</dd>
+        </div>
+        <div>
+          <dt className="label-mono text-[10px] text-ink-400">Entrega</dt>
+          <dd className="mt-2 leading-relaxed text-white">{service.highlight}</dd>
+        </div>
+      </dl>
+
+      <div className="mt-8">
+        <ServiceCta service={service} />
+      </div>
+    </>
+  );
+}
 
 /**
- * Seis ofertas. As três com página própria linkam para ela; as demais
- * levam ao contato — nenhuma promete uma página que ainda não existe.
+ * Serviços — lista selecionável + painel principal.
+ *
+ * Padrão de abas acessível (WAI-ARIA Tabs): setas, Home e End navegam; cada
+ * aba controla seu painel. TODOS os painéis existem no DOM (os inativos com
+ * `hidden`), então o conteúdo completo das seis ofertas continua no HTML
+ * pré-renderizado e disponível para leitores de tela.
+ *
+ * O painel ativo traz uma pequena demonstração visual da solução
+ * (ServiceDemo) e uma luz que segue o cursor. No mobile, as abas viram uma
+ * faixa rolável de toque logo acima do painel.
  */
 export function Services() {
+  const [active, setActive] = useState(0);
+  const tabsRef = useRef<Array<HTMLButtonElement | null>>([]);
+  const reduced = useReducedMotion();
+  const spotlight = usePointerSpotlight<HTMLDivElement>();
+
+  const select = (index: number, focus = false) => {
+    const next = (index + services.length) % services.length;
+    setActive(next);
+    if (focus) {
+      const tab = tabsRef.current[next];
+      tab?.focus();
+      tab?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: reduced ? "auto" : "smooth" });
+    }
+  };
+
+  const onKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    const keys: Record<string, () => void> = {
+      ArrowDown: () => select(active + 1, true),
+      ArrowRight: () => select(active + 1, true),
+      ArrowUp: () => select(active - 1, true),
+      ArrowLeft: () => select(active - 1, true),
+      Home: () => select(0, true),
+      End: () => select(services.length - 1, true),
+    };
+    const action = keys[event.key];
+    if (action) {
+      event.preventDefault();
+      action();
+    }
+  };
+
   return (
-    <Section id="servicos">
-      <div className="py-20 sm:py-24 lg:py-28">
-        <SectionHeading
-          eyebrow="Serviços"
-          title="O que a Beacore faz."
-          description="Seis frentes de trabalho. Cada uma resolve um tipo específico de problema."
-        />
+    <section
+      id="servicos"
+      aria-labelledby="services-title"
+      className="relative scroll-mt-24 overflow-hidden bg-night-900"
+    >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-0 h-[30rem] w-[60rem] -translate-x-1/2 rounded-full bg-brand-700/[0.08] blur-[120px]"
+      />
 
-        <Stagger as="ul" className="mt-12 grid gap-4 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3">
-          {services.map((service) => {
-            const Icon = serviceIcon(service.icon);
-            const href = servicePath(service);
-            const hasPage = Boolean(service.page);
+      <div className="relative mx-auto w-full max-w-7xl px-5 pb-24 sm:px-6 sm:pb-28 lg:px-8 lg:pb-36">
+        <Reveal>
+          <SectionIntro
+            index="03"
+            eyebrow="Serviços"
+            id="services-title"
+            title={
+              <>
+                O que a Beacore faz<span className="text-brand-400">.</span>
+              </>
+            }
+            description="Seis frentes de trabalho. Cada uma resolve um tipo específico de problema."
+          />
+        </Reveal>
 
-            return (
-              <StaggerItem as="li" key={service.id}>
-                <MotionCard as="article" className="h-full">
-                  <div className="group flex h-full flex-col rounded-2xl card-surface p-6 transition-[border-color,box-shadow] duration-300 hover:card-accent sm:p-7">
-                    <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-ink-100 bg-ink-50 text-ink-600 transition-colors duration-300 group-hover:border-brand-500/30 group-hover:bg-brand-50 group-hover:text-brand-600">
-                      <Icon className="h-5 w-5" />
-                    </div>
-
-                    <h3 className="font-display text-lg font-semibold text-ink-950">
-                      {service.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-ink-600">{service.summary}</p>
-
-                    <p className="mt-4 rounded-lg border-l-2 border-brand-500/40 bg-ink-50/60 py-2 pl-3 text-[13px] leading-relaxed text-ink-500">
-                      {service.problem}
-                    </p>
-
-                    <p className="mt-4 flex-1 text-[13px] leading-relaxed text-ink-500">
-                      <span className="font-semibold text-ink-700">Entrega: </span>
-                      {service.highlight}
-                    </p>
-
-                    <div className="mt-6 border-t border-ink-100 pt-4">
-                      {hasPage ? (
-                        <Link
-                          to={href}
-                          className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink-900 transition-colors hover:text-brand-700"
-                        >
-                          {service.cta}
-                          <ArrowRightIcon
-                            aria-hidden="true"
-                            className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-                          />
-                        </Link>
-                      ) : (
-                        <a
-                          href="/#contato"
-                          className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink-900 transition-colors hover:text-brand-700"
-                        >
-                          {service.cta}
-                          <ArrowRightIcon
-                            aria-hidden="true"
-                            className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-                          />
-                        </a>
+        <div className="mt-12 grid gap-6 lg:mt-16 lg:grid-cols-[19rem_1fr] lg:gap-8">
+          {/* ------------------------------------------------------- abas */}
+          <div
+            role="tablist"
+            aria-label="Serviços da Beacore"
+            aria-orientation="vertical"
+            className="-mx-5 flex snap-x gap-2 overflow-x-auto px-5 pb-2 [scrollbar-width:none] sm:-mx-6 sm:px-6 lg:mx-0 lg:flex-col lg:gap-1 lg:overflow-visible lg:px-0 lg:pb-0"
+          >
+            {services.map((service, index) => {
+              const Icon = serviceIcon(service.icon);
+              const selected = index === active;
+              return (
+                <button
+                  key={service.id}
+                  ref={(node) => {
+                    tabsRef.current[index] = node;
+                  }}
+                  type="button"
+                  role="tab"
+                  id={`service-tab-${service.id}`}
+                  aria-selected={selected}
+                  aria-controls={`service-panel-${service.id}`}
+                  tabIndex={selected ? 0 : -1}
+                  onClick={() => select(index)}
+                  onKeyDown={onKeyDown}
+                  className={cn(
+                    "group relative flex shrink-0 snap-start items-center gap-3.5 rounded-2xl border px-4 py-3.5 text-left transition-all duration-300 lg:w-full lg:py-4",
+                    selected
+                      ? "border-white/15 bg-white/[0.06]"
+                      : "border-transparent hover:border-white/[0.08] hover:bg-white/[0.025]",
+                  )}
+                >
+                  {/* indicador do item ativo */}
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "absolute left-0 top-1/2 hidden h-8 w-[2px] -translate-y-1/2 rounded-full bg-brand-400 transition-transform duration-300 lg:block",
+                      selected ? "scale-y-100" : "scale-y-0",
+                    )}
+                  />
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-all duration-300",
+                      selected
+                        ? "border-brand-400/40 bg-brand-500/15 text-brand-200 shadow-[0_0_24px_-6px_rgb(47_114_255/0.8)]"
+                        : "border-white/10 text-ink-400 group-hover:text-white",
+                    )}
+                  >
+                    <Icon className="h-[18px] w-[18px]" />
+                  </span>
+                  <span className="min-w-0">
+                    <span
+                      className={cn(
+                        "block whitespace-nowrap text-[15px] font-medium transition-colors lg:whitespace-normal",
+                        selected ? "text-white" : "text-ink-300 group-hover:text-white",
                       )}
+                    >
+                      {service.title}
+                    </span>
+                    <span className="mt-0.5 hidden text-xs leading-snug text-ink-400 lg:line-clamp-1">
+                      {service.highlight}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* ---------------------------------------------------- painéis */}
+          <div
+            ref={spotlight}
+            className="spotlight relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-night-850"
+          >
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 bg-grid-dark opacity-40 [mask-image:radial-gradient(ellipse_60%_70%_at_80%_40%,black,transparent)]"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-24 top-1/4 h-80 w-80 rounded-full bg-brand-600/20 blur-3xl"
+            />
+
+            {services.map((service, index) => {
+              const selected = index === active;
+              const panelProps = {
+                role: "tabpanel" as const,
+                id: `service-panel-${service.id}`,
+                "aria-labelledby": `service-tab-${service.id}`,
+                tabIndex: 0,
+                className: "relative outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-400",
+              };
+
+              if (!selected) {
+                return (
+                  <div key={service.id} {...panelProps} hidden>
+                    <div className="p-7 sm:p-10">
+                      <ServiceDetails service={service} index={index} />
                     </div>
                   </div>
-                </MotionCard>
-              </StaggerItem>
-            );
-          })}
-        </Stagger>
+                );
+              }
+
+              return (
+                <div key={service.id} {...panelProps}>
+                  <AnimatePresence mode="wait" initial={false}>
+                    <m.div
+                      key={service.id}
+                      initial={reduced ? false : { opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={reduced ? undefined : { opacity: 0, y: -10 }}
+                      transition={{ duration: 0.4, ease: EASE }}
+                      className="grid gap-8 p-7 sm:p-10 xl:grid-cols-[1fr_1.05fr] xl:items-center xl:gap-10"
+                    >
+                      <div>
+                        <ServiceDetails service={service} index={index} />
+                      </div>
+                      <m.div
+                        initial={reduced ? false : { opacity: 0, scale: 0.96, rotateX: 8 }}
+                        animate={{ opacity: 1, scale: 1, rotateX: 0 }}
+                        transition={{ duration: 0.6, ease: EASE, delay: reduced ? 0 : 0.08 }}
+                        className="h-60 [perspective:1000px] sm:h-72 xl:h-[22rem]"
+                      >
+                        <ServiceDemo serviceId={service.id} />
+                      </m.div>
+                    </m.div>
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Core indica o próximo passo para quem ainda não sabe qual escolher. */}
+        <div className="mt-12 flex flex-col items-start gap-6 sm:flex-row sm:items-end lg:mt-14">
+          <Core pose="pointing" className="w-24 shrink-0 sm:w-28" />
+          <div className="pb-2">
+            <p className="max-w-md text-base leading-relaxed text-ink-300">
+              Não sabe qual das frentes resolve o seu caso? Veja cada oferta em detalhe ou conte o
+              problema direto pra gente.
+            </p>
+            <Link
+              to="/servicos"
+              className="group mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white transition-colors hover:text-brand-300"
+            >
+              Ver todos os serviços
+              <ArrowRightIcon
+                aria-hidden="true"
+                className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </Link>
+          </div>
+        </div>
       </div>
-    </Section>
+    </section>
   );
 }

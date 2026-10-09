@@ -1,226 +1,298 @@
+import { useRef, useState } from "react";
 import { Button } from "../components/Button";
+import { Core, coreSrc } from "../components/core/Core";
+import { HeroCanvas } from "../components/three/HeroCanvas";
 import { useGsapScene } from "../components/motion/useGsapScene";
+import { useProjects } from "../hooks/useProjects";
 import { ArrowRightIcon } from "../lib/icons";
+import { cn } from "../lib/utils";
 
-/**
- * Terminal do Hero — restaurado na íntegra a partir do layout anterior.
- *
- * Os atributos `data-hero` foram acrescentados apenas como alvos da timeline
- * do GSAP; nenhuma classe ou conteúdo original foi alterado. É decorativo
- * (`aria-hidden`), então nada aqui precisa ser lido por leitor de tela.
- */
-function CodeCard() {
-  return (
-    <div className="relative" aria-hidden="true">
-      <div
-        data-hero="glow"
-        className="absolute -inset-8 rounded-[2.5rem] bg-brand-500/10 blur-3xl"
-      />
-      <div
-        data-hero="chip"
-        className="absolute -left-6 -top-6 h-24 w-24 rotate-12 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 opacity-15"
-      />
-
-      <div
-        data-hero="panel"
-        className="relative animate-float rounded-2xl border border-ink-100 bg-white/85 shadow-xl shadow-ink-950/5 backdrop-blur"
-      >
-        <div className="flex items-center gap-1.5 border-b border-ink-100 px-4 py-3">
-          <span className="h-2.5 w-2.5 rounded-full bg-ink-200" />
-          <span className="h-2.5 w-2.5 rounded-full bg-ink-200" />
-          <span className="h-2.5 w-2.5 rounded-full bg-brand-500" />
-          <span className="ml-3 font-mono text-[11px] text-ink-500">
-            beacore — produto em construção
-          </span>
-        </div>
-        <pre className="overflow-x-auto p-5 font-mono text-xs leading-6 sm:text-[13px]">
-          <code>
-            <span className="text-emerald-600">$</span> beacore build{" "}
-            <span className="text-ink-500">--prod</span>
-            {"\n"}
-            <span className="text-emerald-600">✓</span>{" "}
-            <span className="text-ink-500">contexto analisado</span>
-            {"\n"}
-            <span className="text-emerald-600">✓</span>{" "}
-            <span className="text-ink-500">solução planejada</span>
-            {"\n"}
-            <span className="text-emerald-600">✓</span>{" "}
-            <span className="text-ink-500">produto construído</span>
-            {"\n\n"}
-            <span className="text-brand-600">const</span>{" "}
-            <span className="text-ink-900">beacore</span> = {"{"}
-            {"\n"}  ideia: <span className="text-emerald-600">"a sua ideia"</span>,
-            {"\n"}  design: <span className="text-emerald-600">"moderno e premium"</span>,
-            {"\n"}  stack: <span className="text-emerald-600">"react + typescript"</span>,
-            {"\n"}
-            {"}"};
-            {"\n\n"}
-            <span className="text-brand-600">beacore</span>
-            <span className="text-ink-900">.build()</span>{" "}
-            <span className="text-brand-600">→</span>{" "}
-            <span className="text-ink-900">experiência digital que funciona</span>
-            {"\n"}
-            <span className="inline-block h-4 w-2 translate-y-0.5 animate-blink bg-brand-600" />
-          </code>
-        </pre>
-      </div>
-
-      <div
-        data-hero="satellite"
-        className="absolute -right-3 -top-5 rounded-xl border border-ink-100 bg-white px-3 py-2 shadow-lg sm:-right-6"
-      >
-        <span className="flex items-center gap-2 font-mono text-[11px] text-ink-700">
-          <span className="h-1.5 w-1.5 animate-pulse-dot rounded-full bg-emerald-500" />
-          Performance 100
-        </span>
-      </div>
-
-      <div
-        data-hero="satellite"
-        className="absolute -bottom-5 left-6 rounded-xl border border-ink-100 bg-white px-3 py-2 shadow-lg"
-      >
-        <span className="flex items-center gap-2 font-mono text-[11px] text-ink-700">
-          <span className="text-emerald-600">✓</span> Deploy pronto
-        </span>
-      </div>
-
-      {/*
-        Slot reservado do mascote (Fase 3, item 10). O personagem ainda não
-        existe; posição e escala já definidas para inserção futura.
-      */}
-      <div className="mascot-slot-hero" data-mascot-slot="hero" />
-    </div>
-  );
-}
+/** A narrativa que a cena 3D encena: da ideia ao resultado. */
+const STAGES = ["Ideia", "Estratégia", "Design", "Tecnologia", "Resultado"] as const;
 
 export function Hero() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  // Estado inicial = última etapa: é o que o HTML pré-renderizado (e quem não
+  // tem WebGL ou pediu menos movimento) deve ver — a história completa.
+  const [stage, setStage] = useState(STAGES.length - 1);
+  // Quando a cena 3D já tem o Core, a versão HTML (fallback) sai de cena.
+  const [coreIn3D, setCoreIn3D] = useState(false);
+  const bubbleRef = useRef<HTMLParagraphElement | null>(null);
+  // Prova social real: os projetos publicados (Supabase, ou o fallback local).
+  const { projects } = useProjects();
+
   /**
-   * Cena de entrada: fundo → badge → headline → texto → CTAs → terminal.
-   * Curta de propósito (≈0,9s) para não atrasar o acesso ao conteúdo.
-   * Só transform e opacity. Não roda com prefers-reduced-motion.
+   * Entrada (≈1s, só transform/opacity) + parallax do Core e do painel
+   * acompanhando o cursor. Desligado em telas compactas e com movimento
+   * reduzido — o conteúdo já está no estado final no HTML.
    */
   const ref = useGsapScene<HTMLElement>(
     ({ q, gsap }) => {
-      const timeline = gsap.timeline({ defaults: { ease: "power3.out", duration: 0.7 } });
-
+      const timeline = gsap.timeline({ defaults: { ease: "power3.out", duration: 0.8 } });
       timeline
-        .from(q("[data-hero='grid']"), { opacity: 0, duration: 0.9 }, 0)
         .from(q("[data-hero='badge']"), { opacity: 0, y: 12 }, 0.05)
-        .from(
-          q("[data-hero='headline-line']"),
-          { opacity: 0, y: 26, stagger: 0.08, duration: 0.75 },
-          0.12,
-        )
-        .from(q("[data-hero='lede']"), { opacity: 0, y: 16 }, 0.34)
-        .from(q("[data-hero='cta']"), { opacity: 0, y: 14, stagger: 0.07 }, 0.44)
-        .from(q("[data-hero='meta']"), { opacity: 0 }, 0.56)
-        .from(q("[data-hero='glow']"), { opacity: 0, scale: 0.85, duration: 1 }, 0.1)
-        .from(q("[data-hero='chip']"), { opacity: 0, scale: 0.8, rotate: 0 }, 0.3)
-        .from(q("[data-hero='panel']"), { opacity: 0, y: 28, scale: 0.97, duration: 0.8 }, 0.2)
-        .from(q("[data-hero='satellite']"), { opacity: 0, scale: 0.9, stagger: 0.12 }, 0.6);
+        .from(q("[data-hero='headline-line']"), { opacity: 0, yPercent: 40, stagger: 0.09, duration: 0.9 }, 0.1)
+        .from(q("[data-hero='lede']"), { opacity: 0, y: 16 }, 0.4)
+        .from(q("[data-hero='cta']"), { opacity: 0, y: 14, stagger: 0.08 }, 0.5)
+        .from(q("[data-hero='meta']"), { opacity: 0 }, 0.7)
+        .from(q("[data-hero='core']"), { opacity: 0, y: 40, scale: 0.9, duration: 1.1 }, 0.55)
+        .from(q("[data-hero='panel']"), { opacity: 0, x: 24, duration: 0.9 }, 0.8)
+        .from(q("[data-hero='cue']"), { opacity: 0 }, 1.1);
 
-      // Parallax discreto — desligado em telas compactas pelo hook.
-      gsap.to(q("[data-hero='panel']"), {
-        yPercent: -8,
+      const coreX = gsap.quickTo(q("[data-hero='core']"), "x", { duration: 0.9, ease: "power3.out" });
+      const coreY = gsap.quickTo(q("[data-hero='core']"), "y", { duration: 0.9, ease: "power3.out" });
+      const panelX = gsap.quickTo(q("[data-hero='panel']"), "x", { duration: 1.1, ease: "power3.out" });
+      const panelY = gsap.quickTo(q("[data-hero='panel']"), "y", { duration: 1.1, ease: "power3.out" });
+
+      const onMove = (event: PointerEvent) => {
+        const nx = event.clientX / window.innerWidth - 0.5;
+        const ny = event.clientY / window.innerHeight - 0.5;
+        coreX(nx * 18);
+        coreY(ny * 10);
+        panelX(nx * -14);
+        panelY(ny * -10);
+      };
+
+      // O conteúdo sobe e esmaece enquanto a cena assume a transição.
+      gsap.to(q("[data-hero='copy']"), {
+        yPercent: -12,
+        opacity: 0.2,
         ease: "none",
-        scrollTrigger: {
-          trigger: ref.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 0.5,
-        },
+        scrollTrigger: { trigger: sectionRef.current, start: "top top", end: "bottom top", scrub: 0.4 },
       });
+
+      window.addEventListener("pointermove", onMove, { passive: true });
+      return () => window.removeEventListener("pointermove", onMove);
     },
     { disableOnCompact: true, entry: true },
   );
 
+  const setRefs = (node: HTMLElement | null) => {
+    sectionRef.current = node;
+    ref.current = node;
+  };
+
   return (
     <section
-      ref={ref}
+      ref={setRefs}
       id="inicio"
-      className="relative overflow-hidden bg-white"
+      className="relative isolate overflow-hidden bg-night-950"
       aria-labelledby="hero-title"
     >
-      <div
-        data-hero="grid"
-        aria-hidden="true"
-        className="absolute inset-0 bg-grid-fine [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black,transparent)]"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute -top-48 left-1/2 h-[26rem] w-[48rem] -translate-x-1/2 rounded-full bg-brand-500/10 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute right-[7%] top-32 hidden h-3 w-3 rotate-12 rounded-[2px] border border-brand-500/40 lg:block"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute left-[5%] top-48 hidden h-2 w-2 rounded-full bg-brand-500/30 lg:block"
-      />
+      {/* Ambiente: luz fria vinda de cima, feixes verticais e grão. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -top-40 right-[-10%] h-[42rem] w-[42rem] rounded-full bg-brand-600/[0.13] blur-[120px]" />
+        <div className="absolute left-[-15%] top-1/3 h-[28rem] w-[28rem] rounded-full bg-brand-800/20 blur-[120px]" />
+        <div className="absolute inset-y-0 left-[58%] hidden w-px bg-gradient-to-b from-transparent via-white/[0.07] to-transparent lg:block" />
+        <div className="absolute inset-y-0 left-[82%] hidden w-px bg-gradient-to-b from-transparent via-brand-400/[0.12] to-transparent lg:block" />
+        <div className="absolute inset-0 bg-grid-dark opacity-40 [mask-image:radial-gradient(ellipse_60%_50%_at_70%_40%,black,transparent)]" />
+        <div className="grain absolute inset-0" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-night-900" />
+      </div>
 
-      <div className="relative mx-auto w-full max-w-6xl px-5 pb-20 pt-28 sm:px-6 sm:pt-32 lg:px-8 lg:pb-28 lg:pt-40">
-        <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
-          <div className="max-w-2xl max-lg:mx-auto max-lg:text-center">
-            <span
-              data-hero="badge"
-              className="inline-flex items-center gap-2.5 rounded-full border border-brand-500/20 bg-brand-50 px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-brand-700 sm:text-[11px] sm:tracking-[0.18em]"
-            >
-              <span className="h-1.5 w-1.5 animate-pulse-dot rounded-full bg-brand-500" />
-              Beacore — Digital Engineering
+      <div className="mx-auto grid w-full max-w-7xl items-center gap-6 px-5 pb-16 pt-28 sm:px-6 sm:pt-32 lg:min-h-[100svh] lg:grid-cols-[1.05fr_1fr] lg:gap-4 lg:px-8 lg:pb-20 lg:pt-28">
+        {/* ----------------------------------------------------- Mensagem ---- */}
+        <div data-hero="copy" className="relative z-10 max-w-2xl">
+          <span
+            data-hero="badge"
+            className="label-mono inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-[10px] text-ink-300 sm:text-[11px]"
+          >
+            <span className="h-1.5 w-1.5 animate-pulse-dot rounded-full bg-brand-400 shadow-[0_0_10px_2px_rgb(47_114_255/0.6)]" />
+            Beacore — Digital Engineering
+          </span>
+
+          <h1
+            id="hero-title"
+            className="mt-7 font-display text-[2.55rem] font-semibold leading-[1.0] tracking-[-0.045em] text-white sm:text-[3.6rem] lg:text-[3.7rem] xl:text-[4.4rem]"
+          >
+            <span className="-mb-[0.14em] block overflow-hidden">
+              <span data-hero="headline-line" className="block pb-[0.14em] text-silver">
+                Transformamos
+              </span>
             </span>
-
-            <h1
-              id="hero-title"
-              className="mt-7 font-display text-[2.15rem] font-bold leading-[1.06] tracking-tight text-ink-950 text-balance sm:text-5xl lg:text-[3.6rem] xl:text-[4rem]"
-            >
-              <span data-hero="headline-line" className="block">
-                Transformamos necessidades{" "}
+            <span className="-mb-[0.14em] block overflow-hidden">
+              <span data-hero="headline-line" className="block pb-[0.14em] text-silver">
+                necessidades em
               </span>
-              <span data-hero="headline-line" className="block">
-                em <span className="text-brand-gradient">soluções digitais.</span>
+            </span>
+            <span className="-mb-[0.14em] block overflow-hidden">
+              <span data-hero="headline-line" className="block pb-[0.14em] text-brand-light">
+                soluções digitais.
               </span>
-            </h1>
+            </span>
+          </h1>
 
-            <p
-              data-hero="lede"
-              className="mt-6 max-w-xl text-base leading-relaxed text-ink-600 max-lg:mx-auto lg:text-lg"
-            >
-              Sites, landing pages, sistemas, automações e produtos digitais desenvolvidos sob
-              medida — do entendimento do problema até a solução publicada e funcionando.
-            </p>
+          <p
+            data-hero="lede"
+            className="mt-7 max-w-lg text-base leading-relaxed text-ink-300 sm:text-lg"
+          >
+            Sites, landing pages, sistemas, automações e produtos digitais desenvolvidos sob
+            medida — do entendimento do problema até a solução publicada e funcionando.
+          </p>
 
-            <div className="mt-9 flex flex-col gap-3 max-lg:items-center sm:flex-row sm:items-center max-lg:sm:justify-center">
-              <span data-hero="cta">
-                <Button href="#contato" size="lg" className="max-sm:w-full">
-                  Falar sobre meu projeto
-                  <ArrowRightIcon className="h-4 w-4" />
-                </Button>
-              </span>
-              <span data-hero="cta">
-                <Button href="#servicos" size="lg" variant="secondary" className="max-sm:w-full">
-                  Ver o que fazemos
-                </Button>
-              </span>
-            </div>
-
-            <p
-              data-hero="meta"
-              className="mt-9 font-mono text-xs leading-relaxed tracking-wide text-ink-500"
-            >
-              React · TypeScript · Node.js · Tailwind · WordPress · Supabase
-            </p>
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <span data-hero="cta">
+              <Button href="#contato" size="lg" variant="light" className="group max-sm:w-full">
+                Falar sobre meu projeto
+                <ArrowRightIcon
+                  aria-hidden="true"
+                  className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                />
+              </Button>
+            </span>
+            <span data-hero="cta">
+              <Button href="#servicos" size="lg" variant="outline-light" className="max-sm:w-full">
+                Ver o que fazemos
+              </Button>
+            </span>
           </div>
 
-          {/*
-            Oculto abaixo de 1024px: é exatamente onde o grid vira uma coluna só.
-            Mantendo-o visível no tablet, o terminal empilharia em largura total e
-            os dois cartões flutuantes ficariam deslocados.
-          */}
-          <div className="w-full max-lg:hidden">
-            <CodeCard />
+          <p
+            data-hero="meta"
+            className="mt-10 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] tracking-wide text-ink-500"
+          >
+            <span className="text-ink-400">Stack</span>
+            <span aria-hidden="true" className="h-px w-6 bg-white/15" />
+            React · TypeScript · Node.js · Tailwind · WordPress · Supabase
+          </p>
+
+          {projects.length > 0 && (
+            <p data-hero="meta" className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-400">
+              <span className="font-mono text-[11px] tracking-wide text-ink-400">No ar</span>
+              <span aria-hidden="true" className="h-px w-6 bg-white/15" />
+              {projects.map((project, index) => (
+                <span key={project.id} className="inline-flex items-center gap-3">
+                  {index > 0 && <span aria-hidden="true" className="text-ink-600">·</span>}
+                  <a
+                    href="#projetos"
+                    className="text-ink-200 underline decoration-white/20 underline-offset-4 transition-colors hover:text-white hover:decoration-brand-400"
+                  >
+                    {project.name}
+                  </a>
+                </span>
+              ))}
+            </p>
+          )}
+        </div>
+
+        {/* ----------------------------------------------------- Experiência --- */}
+        <div className="relative h-[400px] sm:h-[500px] lg:h-[min(720px,82svh)]">
+          <HeroCanvas
+            scrollRoot={sectionRef}
+            onStage={setStage}
+            coreSrc={coreSrc("waving")}
+            onCoreReady={() => setCoreIn3D(true)}
+            anchorRef={bubbleRef}
+            className="absolute inset-0 [mask-image:linear-gradient(to_bottom,black_86%,transparent),linear-gradient(to_right,transparent,black_8%)] [mask-composite:intersect] lg:-right-24 lg:left-[-10%]"
+          />
+
+          {/* Balão do Core 3D: posicionado a cada quadro pela própria cena. */}
+          <p
+            ref={bubbleRef}
+            aria-hidden={!coreIn3D}
+            className={cn(
+              "glass pointer-events-none absolute left-0 top-0 hidden whitespace-nowrap rounded-xl rounded-bl-sm px-3 py-2 text-xs text-ink-200 will-change-transform",
+              coreIn3D && "sm:block",
+            )}
+            style={{ opacity: 0 }}
+          >
+            Oi, eu sou o <span className="font-semibold text-white">Core</span>.
+          </p>
+
+
+          {/* Painel de etapas: a mesma história da cena, em texto. */}
+          <div
+            data-hero="panel"
+            className="absolute bottom-0 right-0 w-[min(100%,26rem)] sm:w-[30rem] lg:bottom-8 lg:w-[31rem]"
+          >
+            <p className="label-mono text-[9px] text-ink-400 sm:text-[10px]">
+              Da ideia ao resultado
+              <span className="hidden text-ink-500 [@media(hover:hover)]:lg:inline">
+                {"  ·  "}explore com o cursor
+              </span>
+            </p>
+            <div className="relative mt-4">
+              <div aria-hidden="true" className="absolute left-0 right-0 top-[5px] h-px bg-white/10">
+                <div
+                  className="h-full bg-gradient-to-r from-brand-500 to-brand-300 shadow-[0_0_10px_rgb(47_114_255/0.7)] transition-[width] duration-700 ease-out"
+                  style={{ width: `${(stage / (STAGES.length - 1)) * 100}%` }}
+                />
+              </div>
+              <ol className="relative grid grid-cols-5">
+                {STAGES.map((label, index) => {
+                  const reached = index <= stage;
+                  const current = index === stage;
+                  return (
+                    <li
+                      key={label}
+                      aria-current={current ? "step" : undefined}
+                      className={cn(
+                        "flex flex-col gap-2.5",
+                        index === 0 ? "items-start" : index === STAGES.length - 1 ? "items-end" : "items-center",
+                      )}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={cn(
+                          "h-[11px] w-[11px] rounded-full border transition-all duration-500",
+                          current
+                            ? "scale-125 border-brand-300 bg-brand-400 shadow-[0_0_12px_3px_rgb(47_114_255/0.7)]"
+                            : reached
+                              ? "border-brand-300/70 bg-night-900"
+                              : "border-white/20 bg-night-900",
+                        )}
+                      />
+                      <span
+                        className={cn(
+                          "text-[11px] transition-colors duration-500 sm:text-[13px]",
+                          current ? "font-medium text-white" : reached ? "text-ink-300" : "text-ink-500",
+                        )}
+                      >
+                        {label}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+          </div>
+
+          {/* Core: anfitrião da experiência, de pé sobre o piso de luz. */}
+          <div
+            className={cn(
+              "transition-opacity duration-700",
+              coreIn3D && "pointer-events-none opacity-0",
+            )}
+          >
+          <div
+            data-hero="core"
+            className="absolute bottom-0 left-0 w-[8.5rem] sm:left-4 sm:w-40 lg:bottom-6 lg:left-0 lg:w-48"
+          >
+            <div className="animate-bob">
+              <Core pose="waving" priority className="w-full drop-shadow-[0_24px_30px_rgb(0_0_0/0.55)]" />
+            </div>
+            <div
+              aria-hidden="true"
+              className="mx-auto -mt-3 h-4 w-3/4 rounded-[100%] bg-brand-500/40 blur-md"
+            />
+            <p className="glass absolute -top-9 left-10 hidden whitespace-nowrap rounded-xl rounded-bl-sm px-3 py-2 text-xs text-ink-200 sm:block">
+              Oi, eu sou o <span className="font-semibold text-white">Core</span>.
+            </p>
+          </div>
           </div>
         </div>
+      </div>
+
+      {/* Indicação de rolagem. */}
+      <div
+        data-hero="cue"
+        aria-hidden="true"
+        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-3 lg:flex"
+      >
+        <span className="label-mono text-[10px] text-ink-500">Role para explorar</span>
+        <span className="relative h-10 w-px overflow-hidden bg-white/10">
+          <span className="absolute inset-x-0 top-0 h-1/2 animate-scan bg-brand-400" />
+        </span>
       </div>
     </section>
   );

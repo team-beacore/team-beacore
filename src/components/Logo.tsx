@@ -1,17 +1,21 @@
 import { cn } from "../lib/utils";
 
 const LOGO_SRC = "/logo.png";
+/** Versão para fundos escuros: wordmark branco, chevron no azul da marca. */
+const LOGO_LIGHT_SRC = "/logo-light.png";
 
 type LogoProps = {
   size?: number;
   href?: string;
   className?: string;
+  /** `light` = wordmark claro, para fundos escuros. */
+  tone?: "dark" | "light";
 };
 
-export function Logo({ size, href, className }: LogoProps) {
+export function Logo({ size, href, className, tone = "dark" }: LogoProps) {
   const img = (
     <img
-      src={LOGO_SRC}
+      src={tone === "light" ? LOGO_LIGHT_SRC : LOGO_SRC}
       alt="Beacore — Digital Engineering"
       width={480}
       height={160}

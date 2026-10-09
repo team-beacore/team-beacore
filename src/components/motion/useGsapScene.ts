@@ -24,7 +24,7 @@ type SceneSetup = (context: {
   /** Busca restrita à raiz da cena. */
   q: (selector: string) => HTMLElement[];
   gsap: Gsap;
-}) => void;
+}) => void | (() => void);
 
 /**
  * Executa uma cena GSAP com escopo, limpeza e acessibilidade resolvidos.
@@ -64,8 +64,10 @@ export function useGsapScene<T extends HTMLElement = HTMLDivElement>(
         // faria o bloco saltar para trás antes de reentrar.
         if (entry && performance.now() - startedAt > ENTRY_ANIMATION_BUDGET_MS) return;
 
+        // A cena pode devolver uma limpeza (ex.: listeners de ponteiro);
+        // o gsap.context a executa no revert().
         context = gsap.context(() => {
-          setupRef.current({
+          return setupRef.current({
             root: ref.current as HTMLElement,
             q: (selector) =>
               Array.from((ref.current as HTMLElement).querySelectorAll<HTMLElement>(selector)),

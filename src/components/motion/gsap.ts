@@ -14,6 +14,29 @@ export type Gsap = typeof GsapType;
  */
 let loader: Promise<Gsap> | null = null;
 
+/**
+ * Mantém as posições de todos os ScrollTriggers corretas quando a altura da
+ * página muda depois da montagem — projetos e depoimentos chegam do Supabase,
+ * imagens carregam, o FAQ abre. Sem isto, gatilhos calculados com a altura
+ * antiga disparam no lugar errado (foi a causa da "área branca": uma seção
+ * fixada fora de posição deixava à mostra o fundo do body).
+ *
+ * Um único ResizeObserver no body, com debounce: nada é recriado por scroll.
+ */
+function watchLayout(trigger: { refresh: () => void }) {
+  if (typeof ResizeObserver === "undefined") return;
+  let lastHeight = document.body.scrollHeight;
+  let timer = 0;
+  const observer = new ResizeObserver(() => {
+    const height = document.body.scrollHeight;
+    if (Math.abs(height - lastHeight) < 2) return;
+    lastHeight = height;
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => trigger.refresh(), 150);
+  });
+  observer.observe(document.body);
+}
+
 export function loadGsap(): Promise<Gsap> {
   if (typeof window === "undefined") {
     return Promise.reject(new Error("GSAP não é carregado durante o prerender."));
@@ -23,6 +46,7 @@ export function loadGsap(): Promise<Gsap> {
     loader = Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(
       ([core, scrollTrigger]) => {
         core.gsap.registerPlugin(scrollTrigger.ScrollTrigger);
+        watchLayout(scrollTrigger.ScrollTrigger);
         return core.gsap;
       },
     );

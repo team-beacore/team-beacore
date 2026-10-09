@@ -44,15 +44,20 @@ function HomePage() {
     <>
       <Seo path="/" title={seo?.title} description={seo?.description} />
       <StructuredData data={homeStructuredData()} />
-      <SiteLayout>
+      <SiteLayout tone="night">
+        {/*
+          Ordem narrativa: experiência → problema → solução → prova (cases) →
+          diferenciais → pessoas → processo → prova social → objeções →
+          encerramento → contato.
+        */}
         <Hero />
         <Needs />
         <Services />
-        <WhyBeacore />
         <Cases />
-        <Testimonials />
-        <Process />
+        <WhyBeacore />
         <About />
+        <Process />
+        <Testimonials />
         <HomeFaq />
         <CTA />
         <Contact />

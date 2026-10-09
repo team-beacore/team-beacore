@@ -108,19 +108,19 @@ function ServicesDropdown() {
         aria-expanded={open}
         aria-controls={SERVICES_MENU_ID}
         onFocus={() => setOpen(true)}
-        className="group relative flex items-center gap-1.5 text-sm font-medium text-ink-600 transition-colors hover:text-ink-950"
+        className="group relative flex items-center gap-1.5 text-sm font-medium text-ink-300 transition-colors hover:text-white"
       >
         Serviços
         <ChevronRightIcon
           aria-hidden="true"
           className={cn(
-            "h-3.5 w-3.5 text-ink-400 transition-transform duration-200",
+            "h-3.5 w-3.5 text-ink-500 transition-transform duration-200",
             open ? "rotate-90" : "rotate-0",
           )}
         />
         <span
           aria-hidden="true"
-          className="absolute -bottom-1.5 left-0 h-px w-full origin-left scale-x-0 bg-brand-600 transition-transform duration-300 group-hover:scale-x-100"
+          className="absolute -bottom-1.5 left-0 h-px w-full origin-left scale-x-0 bg-brand-400 transition-transform duration-300 group-hover:scale-x-100"
         />
       </Link>
 
@@ -134,7 +134,7 @@ function ServicesDropdown() {
             transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
             className="absolute left-1/2 top-full z-50 w-[30rem] -translate-x-1/2 pt-4"
           >
-            <div className="overflow-hidden rounded-2xl border border-ink-100 bg-white p-2 shadow-xl shadow-ink-950/8">
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-night-850/95 p-2 shadow-2xl shadow-black/60 backdrop-blur-xl">
               <ul className="grid grid-cols-2 gap-1">
                 {services.map((service) => {
                   const Icon = serviceIcon(service.icon);
@@ -143,14 +143,14 @@ function ServicesDropdown() {
 
                   const inner = (
                     <>
-                      <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-ink-100 bg-ink-50 text-ink-600 transition-colors group-hover/item:border-brand-500/30 group-hover/item:bg-brand-50 group-hover/item:text-brand-600">
+                      <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-ink-300 transition-colors group-hover/item:border-brand-500/40 group-hover/item:bg-brand-500/10 group-hover/item:text-brand-300">
                         <Icon className="h-4 w-4" />
                       </span>
                       <span className="min-w-0">
-                        <span className="block text-[13px] font-semibold text-ink-950">
+                        <span className="block text-[13px] font-semibold text-white">
                           {service.title}
                         </span>
-                        <span className="mt-0.5 block text-[11px] leading-snug text-ink-500">
+                        <span className="mt-0.5 block text-[11px] leading-snug text-ink-400">
                           {service.summary}
                         </span>
                       </span>
@@ -158,7 +158,7 @@ function ServicesDropdown() {
                   );
 
                   const itemClass =
-                    "group/item flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-ink-50";
+                    "group/item flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-white/[0.05]";
 
                   return (
                     <li key={service.id}>
@@ -179,7 +179,7 @@ function ServicesDropdown() {
               <Link
                 to="/servicos"
                 onClick={() => setOpen(false)}
-                className="mt-1 flex items-center justify-between rounded-xl border-t border-ink-100 px-3 py-3 text-[13px] font-semibold text-ink-900 transition-colors hover:text-brand-700"
+                className="mt-1 flex items-center justify-between rounded-xl border-t border-white/10 px-3 py-3 text-[13px] font-semibold text-white transition-colors hover:text-brand-300"
               >
                 Ver todos os serviços
                 <ChevronRightIcon aria-hidden="true" className="h-4 w-4" />
@@ -260,9 +260,10 @@ export function Navbar() {
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-300",
-        scrolled || open
-          ? "border-b border-ink-100 bg-white/90 backdrop-blur-md"
-          : "border-b border-transparent bg-white/50 backdrop-blur-sm",
+        // Transparente só sobre o Hero escuro da Home; nas demais páginas, sempre sólida.
+        scrolled || open || pathname !== "/"
+          ? "border-b border-white/[0.07] bg-night-900/95 backdrop-blur-xl"
+          : "border-b border-transparent bg-transparent",
       )}
     >
       <nav
@@ -270,7 +271,7 @@ export function Navbar() {
         className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-6 lg:h-[72px] lg:px-8"
       >
         <Link to="/" aria-label="Beacore — Início" className="inline-flex items-center">
-          <Logo className="w-18 lg:w-20" />
+          <Logo tone="light" className="w-24 lg:w-28" />
         </Link>
 
         <ul className="hidden items-center gap-8 lg:flex">
@@ -283,12 +284,12 @@ export function Navbar() {
               <li key={item.href}>
                 <NavItemLink
                   href={item.href}
-                  className="group relative text-sm font-medium text-ink-600 transition-colors hover:text-ink-950"
+                  className="group relative text-sm font-medium text-ink-300 transition-colors hover:text-white"
                 >
                   {item.label}
                   <span
                     aria-hidden="true"
-                    className="absolute -bottom-1.5 left-0 h-px w-full origin-left scale-x-0 bg-brand-600 transition-transform duration-300 group-hover:scale-x-100"
+                    className="absolute -bottom-1.5 left-0 h-px w-full origin-left scale-x-0 bg-brand-400 transition-transform duration-300 group-hover:scale-x-100"
                   />
                 </NavItemLink>
               </li>
@@ -297,7 +298,7 @@ export function Navbar() {
         </ul>
 
         <div className="hidden lg:block">
-          <Button href={siteConfig.cta.href} size="sm">
+          <Button href={siteConfig.cta.href} size="sm" variant="light">
             {siteConfig.cta.label}
           </Button>
         </div>
@@ -309,7 +310,7 @@ export function Navbar() {
           aria-expanded={open}
           aria-controls={MENU_ID}
           aria-label={open ? "Fechar menu" : "Abrir menu"}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-ink-800 transition-colors hover:bg-ink-100 lg:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-white transition-colors hover:bg-white/10 lg:hidden"
         >
           {open ? <CloseIcon className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
         </button>
@@ -325,14 +326,14 @@ export function Navbar() {
         ref={menuRef}
         inert={!open}
         className={cn(
-          "border-ink-100 bg-white transition-all duration-300 ease-out lg:hidden",
+          "border-white/10 bg-night-900 transition-all duration-300 ease-out lg:hidden",
           open
             ? "max-h-[calc(100dvh-4rem)] overflow-y-auto border-t"
             : "max-h-0 overflow-hidden",
         )}
       >
         <div className="px-5 pb-8 pt-4 sm:px-6">
-          <ul className="divide-y divide-ink-100">
+          <ul className="divide-y divide-white/10">
             {siteConfig.nav.map((item) =>
               item.href === "/servicos" ? (
                 <li key={item.href}>
@@ -342,13 +343,13 @@ export function Navbar() {
                     aria-expanded={servicesOpen}
                     aria-controls="menu-servicos-mobile"
                     onClick={() => setServicesOpen((current) => !current)}
-                    className="flex w-full items-center justify-between py-4 text-base font-medium text-ink-800 transition-colors hover:text-brand-700"
+                    className="flex w-full items-center justify-between py-4 text-base font-medium text-white transition-colors hover:text-brand-300"
                   >
                     Serviços
                     <ChevronRightIcon
                       aria-hidden="true"
                       className={cn(
-                        "h-4 w-4 text-ink-400 transition-transform duration-200",
+                        "h-4 w-4 text-ink-500 transition-transform duration-200",
                         servicesOpen ? "rotate-90" : "rotate-0",
                       )}
                     />
@@ -369,7 +370,7 @@ export function Navbar() {
                             const href = servicePath(service);
                             const isRoute = href.startsWith("/servicos");
                             const itemClass =
-                              "block rounded-lg px-3 py-2.5 text-[15px] text-ink-600 transition-colors hover:bg-ink-50 hover:text-brand-700";
+                              "block rounded-lg px-3 py-2.5 text-[15px] text-ink-300 transition-colors hover:bg-white/[0.05] hover:text-white";
 
                             return (
                               <li key={service.id}>
@@ -400,7 +401,7 @@ export function Navbar() {
                               to="/servicos"
                               tabIndex={tab}
                               onClick={close}
-                              className="block rounded-lg px-3 py-2.5 text-[15px] font-semibold text-ink-900 transition-colors hover:bg-ink-50 hover:text-brand-700"
+                              className="block rounded-lg px-3 py-2.5 text-[15px] font-semibold text-white transition-colors hover:bg-white/[0.05] hover:text-brand-300"
                             >
                               Ver todos os serviços
                             </Link>
@@ -416,10 +417,10 @@ export function Navbar() {
                     href={item.href}
                     onClick={close}
                     tabIndex={tab}
-                    className="flex items-center justify-between py-4 text-base font-medium text-ink-800 transition-colors hover:text-brand-700"
+                    className="flex items-center justify-between py-4 text-base font-medium text-white transition-colors hover:text-brand-300"
                   >
                     {item.label}
-                    <span aria-hidden="true" className="text-ink-300">
+                    <span aria-hidden="true" className="text-ink-500">
                       →
                     </span>
                   </NavItemLink>
@@ -434,6 +435,7 @@ export function Navbar() {
               onClick={close}
               tabIndex={tab}
               className="w-full"
+              variant="light"
               size="lg"
             >
               {siteConfig.cta.label}
