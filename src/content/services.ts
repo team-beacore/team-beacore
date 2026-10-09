@@ -20,7 +20,8 @@ export type ServiceIcon =
   | "bot"
   | "cubes"
   | "bag"
-  | "sliders";
+  | "sliders"
+  | "megaphone";
 
 export type ServicePageContent = {
   /** Hero da página. */
@@ -70,8 +71,13 @@ export type Service = {
   cta: string;
   /** Mensagem usada no WhatsApp a partir desta oferta. */
   whatsapp: string;
-  /** Presente = tem página dedicada. */
+  /** Presente = tem página dedicada no modelo padrão (ServiceSections). */
   page?: ServicePageContent;
+  /**
+   * Presente = tem página dedicada com layout próprio (ver STANDALONE_PAGES em
+   * ServicePage). Rota, metadata, prerender e sitemap continuam vindo daqui.
+   */
+  standalone?: { seo: { title: string; description: string } };
 };
 
 export const services: Service[] = [
@@ -384,6 +390,24 @@ export const services: Service[] = [
     },
   },
   {
+    id: "gestao-de-trafego-pago",
+    slug: "gestao-de-trafego-pago",
+    icon: "megaphone",
+    title: "Gestão de Tráfego Pago",
+    summary: "Campanhas no Meta Ads e no Google Ads planejadas para gerar oportunidades.",
+    problem: "Você investe (ou quer investir) em anúncios sem saber o que de fato traz cliente.",
+    highlight: "Campanhas com estratégia, rastreamento e otimização contínua",
+    cta: "Quero uma avaliação estratégica",
+    whatsapp: "a gestão de tráfego pago (Meta Ads e Google Ads)",
+    standalone: {
+      seo: {
+        title: "Gestão de Tráfego Pago | Meta Ads e Google Ads | Beacore",
+        description:
+          "Gestão estratégica de Meta Ads e Google Ads para empresas que buscam gerar oportunidades, medir resultados e otimizar seus investimentos em anúncios.",
+      },
+    },
+  },
+  {
     id: "sistemas-web",
     slug: "sistemas-web",
     icon: "code",
@@ -577,10 +601,23 @@ export const servicesWithPage = services.filter(
   (service): service is Service & { page: ServicePageContent } => Boolean(service.page),
 );
 
+/** Tem página própria em /servicos/:slug (modelo padrão ou layout próprio). */
+export function hasDedicatedPage(service: Service): boolean {
+  return Boolean(service.page || service.standalone);
+}
+
+/** Todas as ofertas com rota própria — usado por rotas, SEO, prerender e sitemap. */
+export const servicesWithRoute = services.filter(hasDedicatedPage);
+
+/** Metadata da página da oferta, venha ela do modelo padrão ou do layout próprio. */
+export function serviceSeo(service: Service): { title: string; description: string } | undefined {
+  return service.page?.seo ?? service.standalone?.seo;
+}
+
 export function getServiceBySlug(slug: string): Service | undefined {
   return services.find((service) => service.slug === slug);
 }
 
 export function servicePath(service: Service): string {
-  return service.page ? `/servicos/${service.slug}` : "/#contato";
+  return hasDedicatedPage(service) ? `/servicos/${service.slug}` : "/#contato";
 }

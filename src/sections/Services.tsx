@@ -5,7 +5,7 @@ import { Core } from "../components/core/Core";
 import { SectionIntro } from "../components/experience/SectionIntro";
 import { ServiceDemo } from "../components/service/ServiceDemo";
 import { serviceIcon } from "../components/service/serviceIcon";
-import { services, servicePath, type Service } from "../content/services";
+import { hasDedicatedPage, services, servicePath, type Service } from "../content/services";
 import { ArrowRightIcon } from "../lib/icons";
 import { cn } from "../lib/utils";
 
@@ -24,7 +24,7 @@ function ServiceCta({ service }: { service: Service }) {
       />
     </>
   );
-  return service.page ? (
+  return hasDedicatedPage(service) ? (
     <Link to={servicePath(service)} className={className}>
       {content}
     </Link>
@@ -67,7 +67,7 @@ function ServiceDetails({ service }: { service: Service }) {
  *
  * Padrão de abas acessível (WAI-ARIA Tabs): setas, Home e End navegam; cada
  * aba controla seu painel. TODOS os painéis existem no DOM (os inativos com
- * `hidden`), então o conteúdo completo das seis ofertas continua no HTML
+ * `hidden`), então o conteúdo completo de todas as ofertas continua no HTML
  * pré-renderizado e disponível para leitores de tela.
  *
  * O painel ativo traz uma pequena demonstração visual da solução
@@ -115,7 +115,7 @@ export function Services() {
         <SectionIntro
           id="services-title"
           title="O que a Beacore faz."
-          description="Seis frentes de trabalho. Cada uma resolve um tipo específico de problema — escolha uma para ver o que ela entrega."
+          description="Sete frentes de trabalho. Cada uma resolve um tipo específico de problema — escolha uma para ver o que ela entrega."
         />
 
         <div className="mt-12 grid gap-6 lg:mt-16 lg:grid-cols-[19rem_1fr] lg:gap-8">

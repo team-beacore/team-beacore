@@ -241,7 +241,42 @@ function ProductDemo() {
   );
 }
 
+/**
+ * Gestão de Tráfego Pago: um anúncio leva à página, e a página a um contato —
+ * o caminho que as campanhas organizam e medem. Sem números nem métricas.
+ */
+function TrafficDemo() {
+  return (
+    <Frame className="flex items-center justify-center p-6">
+      <div className="grid w-full max-w-[26rem] grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-3">
+        {/* anúncio */}
+        <div className={cn("rounded-lg border border-white/10 bg-white/[0.04] p-2", rise)} style={delay(0)}>
+          <span className="block h-1.5 w-1/2 rounded-full bg-white/25" />
+          <span className="mt-1.5 block aspect-square rounded-md bg-gradient-to-br from-brand-500/50 to-brand-800/30" />
+          <span className="mt-1.5 block h-2.5 w-full rounded bg-brand-400/70" />
+        </div>
+        <span className={cn("h-px w-6 bg-brand-300/70", rise)} style={delay(0.4)} />
+        {/* página */}
+        <div className={cn("rounded-lg border border-white/10 bg-white/[0.04] p-2", rise)} style={delay(0.7)}>
+          <span className="block h-1.5 w-2/3 rounded-full bg-white/40" />
+          <span className={cn(bar, "mt-1.5 block h-1 w-full")} />
+          <span className={cn(bar, "mt-1 block h-1 w-4/5")} />
+          <span className="mt-2 block h-4 w-full animate-[demo-pulse_2.6s_ease-in-out_infinite] rounded bg-brand-500 motion-reduce:animate-none" />
+        </div>
+        <span className={cn("h-px w-6 bg-brand-300/70", rise)} style={delay(1.1)} />
+        {/* contato */}
+        <div className={cn("flex flex-col items-center gap-1.5 rounded-lg border border-brand-400/40 bg-brand-500/15 p-2", rise)} style={delay(1.4)}>
+          <span className="block h-6 w-6 rounded-full bg-white/80" />
+          <span className="block h-1.5 w-3/4 rounded-full bg-white/40" />
+          <span className="block h-1.5 w-1/2 rounded-full bg-white/25" />
+        </div>
+      </div>
+    </Frame>
+  );
+}
+
 const demos: Record<string, () => ReactNode> = {
+  "gestao-de-trafego-pago": TrafficDemo,
   "criacao-de-sites": SitesDemo,
   "landing-pages": LandingDemo,
   "sistemas-web": SystemsDemo,

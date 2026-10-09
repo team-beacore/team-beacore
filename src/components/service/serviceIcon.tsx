@@ -5,6 +5,7 @@ import {
   CodeIcon,
   CubesIcon,
   GlobeIcon,
+  MegaphoneIcon,
   MonitorIcon,
   SlidersIcon,
   TargetIcon,
@@ -19,6 +20,7 @@ const map = {
   cubes: CubesIcon,
   bag: BagIcon,
   sliders: SlidersIcon,
+  megaphone: MegaphoneIcon,
 } as const;
 
 export function serviceIcon(icon: ServiceIcon) {

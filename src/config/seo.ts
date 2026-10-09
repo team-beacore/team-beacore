@@ -1,5 +1,5 @@
 import { siteConfig, siteUrl } from "./site";
-import { services, servicesWithPage } from "../content/services";
+import { serviceSeo, servicesWithRoute } from "../content/services";
 
 /**
  * Fonte central de metadata.
@@ -55,23 +55,21 @@ export const routeSeo: RouteSeo[] = [
     path: "/servicos",
     title: "Serviços | Beacore",
     description:
-      "Sites, landing pages, sistemas web, automações, e-commerce e produtos digitais desenvolvidos sob medida pela Beacore.",
+      "Sites, landing pages, gestão de tráfego pago, sistemas web, automações, e-commerce e produtos digitais desenvolvidos sob medida pela Beacore.",
     sitemap: true,
   },
   // Derivadas do registro de ofertas: acrescentar uma oferta com `page`
   // cria automaticamente rota, metadata, prerender e entrada no sitemap.
-  ...servicesWithPage.map((service) => ({
+  ...servicesWithRoute.map((service) => ({
     path: `/servicos/${service.slug}`,
-    title: service.page.seo.title,
-    description: service.page.seo.description,
+    title: serviceSeo(service)!.title,
+    description: serviceSeo(service)!.description,
     sitemap: true,
   })),
 ];
 
 /** Slugs que possuem página dedicada — usado pelo router. */
-export const serviceSlugsWithPage = services
-  .filter((service) => service.page)
-  .map((service) => service.slug);
+export const serviceSlugsWithPage = servicesWithRoute.map((service) => service.slug);
 
 export function getRouteSeo(path: string): RouteSeo | undefined {
   return routeSeo.find((route) => route.path === path);

@@ -7,7 +7,7 @@ import { Button } from "../components/Button";
 import { Stagger, StaggerItem } from "../components/motion/Reveal";
 import { MotionCard } from "../components/motion/MotionCard";
 import { serviceIcon } from "../components/service/serviceIcon";
-import { services, servicePath } from "../content/services";
+import { hasDedicatedPage, services, servicePath } from "../content/services";
 import { ArrowRightIcon } from "../lib/icons";
 
 export function ServicesIndexPage() {
@@ -16,7 +16,7 @@ export function ServicesIndexPage() {
       <Seo
         path="/servicos"
         title="Serviços | Beacore"
-        description="Sites, landing pages, sistemas web, automações, e-commerce e produtos digitais desenvolvidos sob medida pela Beacore."
+        description="Sites, landing pages, gestão de tráfego pago, sistemas web, automações, e-commerce e produtos digitais desenvolvidos sob medida pela Beacore."
       />
 
       <section className="relative overflow-hidden bg-white">
@@ -33,7 +33,7 @@ export function ServicesIndexPage() {
           <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Serviços" }]} />
 
           <h1 className="mt-8 max-w-3xl font-display text-[2rem] font-bold leading-[1.08] tracking-tight text-ink-950 text-balance sm:text-[2.75rem] lg:text-[3.25rem]">
-            Seis frentes para transformar necessidades em{" "}
+            Sete frentes para transformar necessidades em{" "}
             <span className="text-brand-gradient">soluções digitais.</span>
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-ink-600 lg:text-lg">
@@ -49,7 +49,7 @@ export function ServicesIndexPage() {
             {services.map((service) => {
               const Icon = serviceIcon(service.icon);
               const href = servicePath(service);
-              const hasPage = Boolean(service.page);
+              const hasPage = hasDedicatedPage(service);
 
               return (
                 <StaggerItem as="li" key={service.id}>

@@ -29,6 +29,25 @@ export function GlobeIcon(props: IconProps) {
   );
 }
 
+export function MegaphoneIcon(props: IconProps) {
+  return (
+    <StrokeIcon {...props}>
+      <path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1z" />
+      <path d="M16 9a4 4 0 0 1 0 6" />
+      <path d="M19 6.5a8 8 0 0 1 0 11" />
+    </StrokeIcon>
+  );
+}
+
+export function SearchIcon(props: IconProps) {
+  return (
+    <StrokeIcon {...props}>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" />
+    </StrokeIcon>
+  );
+}
+
 export function TargetIcon(props: IconProps) {
   return (
     <StrokeIcon {...props}>

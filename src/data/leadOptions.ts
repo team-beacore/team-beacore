@@ -40,12 +40,24 @@ export const goalOptions = [
 export type NeedValue = (typeof needOptions)[number]["value"];
 export type GoalValue = (typeof goalOptions)[number]["value"];
 
+/**
+ * Rótulos dos valores usados só pela página de Gestão de Tráfego Pago (ver
+ * migration 0012). Não entram nos selects do formulário geral.
+ */
+const extraNeedLabels: Record<string, string> = { "trafego-pago": "Gestão de tráfego pago" };
+const extraGoalLabels: Record<string, string> = {
+  "gerar-leads": "Gerar contatos e leads",
+  "conversas-mensagens": "Receber conversas e mensagens",
+  "reconhecimento-marca": "Tornar a marca conhecida",
+  "melhorar-campanhas": "Melhorar campanhas que já rodam",
+};
+
 export function needLabel(value: string): string {
-  return needOptions.find((option) => option.value === value)?.label ?? value;
+  return needOptions.find((option) => option.value === value)?.label ?? extraNeedLabels[value] ?? value;
 }
 
 export function goalLabel(value: string): string {
-  return goalOptions.find((option) => option.value === value)?.label ?? value;
+  return goalOptions.find((option) => option.value === value)?.label ?? extraGoalLabels[value] ?? value;
 }
 
 /**

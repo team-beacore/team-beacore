@@ -9,10 +9,10 @@ import { Core } from "./core/Core";
 
 const inputClass =
   "w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-base text-ink-900 placeholder:text-ink-400 transition focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/10";
-const invalidClass = "border-red-400 focus:border-red-500 focus:ring-red-500/10";
+export const invalidClass = "border-red-400 focus:border-red-500 focus:ring-red-500/10";
 
 /** Variante para fundos escuros (Home). Só o visual muda — a lógica é a mesma. */
-const inputClassDark =
+export const inputClassDark =
   "w-full rounded-xl border border-white/12 bg-white/[0.04] px-4 py-3 text-base text-white placeholder:text-ink-500 transition focus:border-brand-400 focus:bg-white/[0.06] focus:outline-none focus:ring-4 focus:ring-brand-500/15";
 
 type Tone = "light" | "dark";
@@ -22,7 +22,7 @@ const MIN_NAME = 2;
 const MIN_MESSAGE = 10;
 const MAX_MESSAGE = 2000;
 
-const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+export const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 type FormValues = {
   name: string;
@@ -47,7 +47,7 @@ const emptyValues: FormValues = {
 };
 
 /** Aceita os formatos brasileiros comuns, com ou sem DDI, máscara ou espaços. */
-function isValidBrazilianPhone(raw: string): boolean {
+export function isValidBrazilianPhone(raw: string): boolean {
   const digits = raw.replace(/\D/g, "");
   if (digits.startsWith("55")) return digits.length === 12 || digits.length === 13;
   return digits.length === 10 || digits.length === 11;
